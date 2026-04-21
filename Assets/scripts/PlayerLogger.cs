@@ -1,18 +1,11 @@
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 using System.IO;
 using System;
 
 public class MyFileLogHandler : ILogHandler
 {
-    public string LogPath
-    {
-        get
-        {
-            return _filePath;
-        }
-    }
+    public string LogPath => _filePath;
 
     private FileStream _fileStream;
     private StreamWriter _streamWriter;
@@ -21,34 +14,39 @@ public class MyFileLogHandler : ILogHandler
 
     public MyFileLogHandler()
     {
-        _filePath = Path.Combine(Application.persistentDataPath, "log" + DateTime.Now.ToString("HH-mm-ss dd-MM-yyyy") + ".txt");
+        _filePath = Path.Combine(Application.persistentDataPath, "log_" + DateTime.Now.ToString("HH-mm-ss_dd-MM-yyyy") + ".txt");
         _fileStream = new FileStream(_filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         _streamWriter = new StreamWriter(_fileStream);
 
-        // Replace the default debug log handler
+        // Подменяем обработчик логов Unity
         Debug.unityLogger.logHandler = this;
     }
 
     public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
     {
-        _streamWriter.WriteLine(DateTime.Now.ToString("HH-mm-ss") + ": " + String.Format(format, args));
+        string formattedMessage = string.Format(format, args);
+        string line = DateTime.Now.ToString("HH-mm-ss") + ": " + formattedMessage;
+
+        // Запись в файл
+        _streamWriter.WriteLine(line);
         _streamWriter.Flush();
+
+        // Отправка в UI (без повторного вызова логгера, чтобы избежать рекурсии)
+        PlayerLogger.NotepadLogEvent?.Invoke(formattedMessage);
+
+        // Передаём в стандартный обработчик (консоль Unity)
         _defaultLogHandler.LogFormat(logType, context, format, args);
     }
 
     public void LogException(Exception exception, UnityEngine.Object context)
     {
-        if (exception == null)
-            return;
-        if (context == null)
-            return;
-
         _defaultLogHandler.LogException(exception, context);
     }
 
     public void Close()
     {
-        _streamWriter.Close();
+        _streamWriter?.Close();
+        _fileStream?.Close();
     }
 }
 
@@ -60,18 +58,21 @@ public static class PlayerLogger
 
     public static void Initialize()
     {
-        _myFileLogHandler = new MyFileLogHandler();
-        _logger.Log("Log saved at " + _myFileLogHandler.LogPath);
+        if (_myFileLogHandler == null)
+        {
+            _myFileLogHandler = new MyFileLogHandler();
+            _logger.Log("Log file saved at: " + _myFileLogHandler.LogPath);
+        }
     }
 
     public static void Shutdown()
     {
-        _myFileLogHandler.Close();
+        _myFileLogHandler?.Close();
+        _myFileLogHandler = null;
     }
 
     public static void Message(string message)
     {
-        _logger.Log(message);
-        NotepadLogEvent.Invoke(message);
+        _logger.Log(message); // автоматически попадёт в новый обработчик и в UI
     }
 }
