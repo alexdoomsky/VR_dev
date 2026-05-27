@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "XRI Default Input Actions",
     "maps": [
         {
@@ -452,6 +453,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "thumbstick touched left",
+                    "type": "Button",
+                    "id": "f8f9d9a4-f7ea-43b7-bd54-542eb51258f8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -859,6 +869,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f46c1b80-899d-4063-b074-77a09886c291",
+                    "path": "<XRController>{LeftHand}/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "thumbstick touched left",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1545,6 +1566,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "thumbstich touched right",
+                    "type": "Button",
+                    "id": "e061ed48-bc39-4b13-ac28-2f92f9f0d518",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1952,6 +1982,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ec392c90-9846-4d46-930f-d8f406e6ae7e",
+                    "path": "<XRController>/thumbstickTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "thumbstich touched right",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
