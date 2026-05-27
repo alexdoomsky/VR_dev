@@ -93,12 +93,12 @@ public class HandAnimationController : MonoBehaviour
     private void OnSelect(SelectEnterEventArgs args)
     {
         Debug.Log("[HAND_ANIMATION_CONTROLLER] grabbed!");
-        HideHands(true);
+       // HideHands(true);
     }
 
     private void OnDeselect(SelectExitEventArgs args)
     {
-        HideHands(false);
+      //  HideHands(false);
     }
 
     private void HideHands(bool state)
