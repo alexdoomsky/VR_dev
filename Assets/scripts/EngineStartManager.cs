@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EngineStartManager : MonoBehaviour
 {
-    // правильный порядок (ИМЕНА ОБЪЕКТОВ В СЦЕНЕ)
+    // правильный порядок
     private List<string> correctSequence = new List<string>
     {
         "FuelButton",
@@ -12,7 +12,11 @@ public class EngineStartManager : MonoBehaviour
     };
 
     private int currentIndex = 0;
-    private bool engineStarted = false;
+
+    [Header("Engine State")]
+    [SerializeField] private bool engineStarted = false;
+
+    public bool EngineStarted => engineStarted;
 
     public void RegisterButtonPress(string buttonName)
     {
@@ -24,7 +28,6 @@ public class EngineStartManager : MonoBehaviour
 
         Debug.Log($"Pressed: {buttonName}");
 
-        // проверка правильности
         if (buttonName == correctSequence[currentIndex])
         {
             currentIndex++;
@@ -32,6 +35,7 @@ public class EngineStartManager : MonoBehaviour
             if (currentIndex >= correctSequence.Count)
             {
                 engineStarted = true;
+
                 Debug.Log("ENGINE STARTED");
             }
         }
@@ -39,7 +43,6 @@ public class EngineStartManager : MonoBehaviour
         {
             Debug.Log("WRONG ORDER - engine not started");
 
-            // сброс
             currentIndex = 0;
         }
     }
