@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 73cbd5f743189d742803c379c79e175f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 259602
+  packageName: TrafficCones, TrafficDrum & StackerCone
+  packageVersion: 1.0
+  assetPath: Assets/TrafficCones, TrafficDrum & StackerCone/TrafficCone01/Cone.mat
+  uploadId: 609825

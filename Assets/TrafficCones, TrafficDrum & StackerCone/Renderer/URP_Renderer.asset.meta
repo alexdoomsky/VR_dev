@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9e753b387e330db4fbba74bfb89f4749
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 259602
+  packageName: TrafficCones, TrafficDrum & StackerCone
+  packageVersion: 1.0
+  assetPath: Assets/TrafficCones, TrafficDrum & StackerCone/Renderer/URP_Renderer.asset
+  uploadId: 609825
