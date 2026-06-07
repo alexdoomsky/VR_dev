@@ -5,69 +5,100 @@ using System.Collections;
 
 public class EngineHapticsController : MonoBehaviour
 {
-    [Header("Engine")]
-    [SerializeField] private EngineStartManager _engineManager;
+    [Header("References")]
+    [SerializeField] private TankTelemetry telemetry;
 
     [Header("Controllers")]
-    [SerializeField] private XRBaseInputInteractor _leftHand;
+    [SerializeField] private XRBaseInputInteractor leftHand;
+    [SerializeField] private XRBaseInputInteractor rightHand;
 
-    [SerializeField] private XRBaseInputInteractor _rightHand;
+    [Header("Idle Haptics")]
+    [SerializeField] private float amplitude = 0.08f;
+    [SerializeField] private float duration = 0.08f;
+    [SerializeField] private float interval = 0.25f;
 
-    [Header("Idle Vibration")]
-    [SerializeField] private float _amplitude = 0.08f;
+    [Header("Running modulation")]
+    [SerializeField] private float rpmToAmplitude = 0.00005f;
 
-    [SerializeField] private float _duration = 0.08f;
-
-    [SerializeField] private float _interval = 0.25f;
-
-    private Coroutine _engineRoutine;
-
-    private bool _wasStarted;
+    private Coroutine hapticsRoutine;
+    private EngineState lastState;
 
     private void Update()
     {
-        if (_engineManager == null)
+        if (telemetry == null)
             return;
 
-        // двигатель только что запустился
-        if (_engineManager.EngineStarted && !_wasStarted)
+        EngineState state = telemetry.EngineState;
+
+        if (state != lastState)
         {
-            _wasStarted = true;
-
-            _engineRoutine = StartCoroutine(
-                EngineIdleHaptics()
-            );
-        }
-
-        //  engine stop
-    }
-
-    private IEnumerator EngineIdleHaptics()
-    {
-        while (true)
-        {
-            SendHaptics();
-
-            yield return new WaitForSeconds(_interval);
+            HandleStateChange(state);
+            lastState = state;
         }
     }
 
-    private void SendHaptics()
+    private void HandleStateChange(EngineState state)
     {
-        if (_leftHand != null)
+        switch (state)
         {
-            _leftHand.SendHapticImpulse(
-                _amplitude,
-                _duration
-            );
+            case EngineState.Running:
+                StartHaptics();
+                break;
+
+            case EngineState.Starting:
+                StopHaptics();
+                break;
+
+            case EngineState.Stalled:
+                StopHaptics();
+                break;
+
+            case EngineState.Off:
+                StopHaptics();
+                break;
+        }
+    }
+
+    private void StartHaptics()
+    {
+        if (hapticsRoutine != null)
+            StopCoroutine(hapticsRoutine);
+
+        hapticsRoutine = StartCoroutine(HapticsLoop());
+    }
+
+    private void StopHaptics()
+    {
+        if (hapticsRoutine != null)
+        {
+            StopCoroutine(hapticsRoutine);
+            hapticsRoutine = null;
+        }
+    }
+
+    private IEnumerator HapticsLoop()
+    {
+        while (telemetry != null &&
+            telemetry.EngineState == EngineState.Running)
+        {
+            float dynamicAmplitude =
+            amplitude +
+            telemetry.EngineRPM * rpmToAmplitude;
+
+            SendHaptics(dynamicAmplitude, duration);
+
+            yield return new WaitForSeconds(interval);
         }
 
-        if (_rightHand != null)
-        {
-            _rightHand.SendHapticImpulse(
-                _amplitude,
-                _duration
-            );
-        }
+        hapticsRoutine = null;
+    }
+
+    private void SendHaptics(float amp, float dur)
+    {
+        if (leftHand != null)
+            leftHand.SendHapticImpulse(amp, dur);
+
+        if (rightHand != null)
+            rightHand.SendHapticImpulse(amp, dur);
     }
 }

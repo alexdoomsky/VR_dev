@@ -4,12 +4,12 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class EngineButton : MonoBehaviour
 {
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactable;
-    private EngineStartManager manager;
+    private EngineStartSequence manager;
 
     private void Awake()
     {
         interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
-        manager = FindObjectOfType<EngineStartManager>();
+        manager = FindObjectOfType<EngineStartSequence>();
     }
 
     private void OnEnable()

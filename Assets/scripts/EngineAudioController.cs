@@ -4,73 +4,118 @@ using UnityEngine;
 public class EngineAudioController : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private EngineStartManager _engineManager;
+    [SerializeField] private TankTelemetry telemetry;
 
     [Header("Audio Sources")]
-    [SerializeField] private AudioSource _startupSource;
-
-    [SerializeField] private AudioSource _idleSource;
-
-    [SerializeField] private AudioSource _shutdownSource;
+    [SerializeField] private AudioSource startupSource;
+    [SerializeField] private AudioSource idleSource;
+    [SerializeField] private AudioSource shutdownSource;
 
     [Header("Settings")]
-    [SerializeField] private float _startupDelay = 0.2f;
+    [SerializeField] private float startupDelay = 0.2f;
+    [SerializeField] private float idleVolume = 0.6f;
 
-    [SerializeField] private float _idleVolume = 0.6f;
-
-    private bool _wasStarted;
+    private EngineState lastState;
+    private Coroutine startupRoutine;
 
     private void Update()
     {
-        if (_engineManager == null)
+        if (telemetry == null)
             return;
 
-        // запуск двигателя
-        if (_engineManager.EngineStarted && !_wasStarted)
-        {
-            _wasStarted = true;
+        var state = telemetry.EngineState;
 
-            StartCoroutine(StartEngineSequence());
+        if (state != lastState)
+        {
+            HandleStateChange(state);
+            lastState = state;
+        }
+
+        // динамика idle можно позже привязать к RPM
+        if (state == EngineState.Running && idleSource != null)
+        {
+            idleSource.volume = idleVolume;
         }
     }
 
-    private IEnumerator StartEngineSequence()
+    private void HandleStateChange(EngineState state)
     {
-        // проигрываем запуск
-        if (_startupSource != null)
+        switch (state)
         {
-            _startupSource.Play();
+            case EngineState.Starting:
+                StartStartup();
+                break;
+
+            case EngineState.Running:
+                StartIdle();
+                break;
+
+            case EngineState.Stalled:
+                PlayShutdown();
+                break;
+
+            case EngineState.Off:
+                StopAllAudio();
+                break;
+        }
+    }
+
+    private void StartStartup()
+    {
+        if (startupRoutine != null)
+            StopCoroutine(startupRoutine);
+
+        startupRoutine = StartCoroutine(StartupSequence());
+    }
+
+    private IEnumerator StartupSequence()
+    {
+        if (startupSource != null)
+        {
+            startupSource.Play();
 
             yield return new WaitForSeconds(
-                _startupSource.clip.length + _startupDelay
+                startupSource.clip != null
+                ? startupSource.clip.length + startupDelay
+                : startupDelay
             );
         }
 
-        // запускаем idle loop
-        if (_idleSource != null)
+        // если за время старта двигатель не умер
+        if (telemetry.EngineState == EngineState.Starting)
         {
-            _idleSource.volume = _idleVolume;
-
-            _idleSource.loop = true;
-
-            _idleSource.Play();
+            telemetry.EngineState = EngineState.Running;
         }
     }
 
-    public void StopEngine()
+    private void StartIdle()
     {
-        // стоп idle
-        if (_idleSource != null)
-        {
-            _idleSource.Stop();
-        }
+        if (idleSource == null)
+            return;
 
-        // звук остановки двигателя
-        if (_shutdownSource != null)
+        if (!idleSource.isPlaying)
         {
-            _shutdownSource.Play();
+            idleSource.loop = true;
+            idleSource.volume = idleVolume;
+            idleSource.Play();
         }
+    }
 
-        _wasStarted = false;
+    private void PlayShutdown()
+    {
+        if (idleSource != null)
+            idleSource.Stop();
+
+        if (shutdownSource != null)
+            shutdownSource.Play();
+    }
+
+    private void StopAllAudio()
+    {
+        if (idleSource != null)
+            idleSource.Stop();
+
+        if (startupSource != null)
+            startupSource.Stop();
     }
 }
