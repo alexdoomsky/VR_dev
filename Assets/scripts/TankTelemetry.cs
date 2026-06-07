@@ -60,6 +60,7 @@ public class TankTelemetry : MonoBehaviour
 
     [Header("Movement")]
     [Tooltip("Vehicle speed in km/h")]
+    public float TargetSpeedKmh;
     public float SpeedKmh;
 
     [Tooltip("Linear velocity magnitude in m/s")]
@@ -71,7 +72,8 @@ public class TankTelemetry : MonoBehaviour
     [Header("Tracks")]
     public float LeftTrackForce;
     public float RightTrackForce;
-
+    public float LeftTrackSpeed;
+    public float RightTrackSpeed;
     [Tooltip("0 = no slip")]
     public float LeftTrackSlip;
 

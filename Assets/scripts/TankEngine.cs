@@ -172,13 +172,19 @@ public class TankEngine : MonoBehaviour
 
     private float CalculateSimpleLoad()
     {
-        // пока заглушка, позже сюда придёт КПП + tracks + surface
-        float movementLoad = telemetry.SpeedKmh * 8f;
+        float movementLoad =
+        telemetry.SpeedKmh * 8f;
 
         float brakeLoad =
-        (telemetry.LeftBrakeInput + telemetry.RightBrakeInput) * 300f;
+        (telemetry.LeftBrakeInput +
+        telemetry.RightBrakeInput) * 300f;
 
-        return movementLoad + brakeLoad;
+        float gearboxLoad =
+        telemetry.GearLoad * 100f;
+
+        return movementLoad +
+        brakeLoad +
+        gearboxLoad;
     }
 
     private void CheckStall()
