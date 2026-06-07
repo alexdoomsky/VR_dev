@@ -47499,8 +47499,8 @@ MonoBehaviour:
   ambientTemp: 20
   overheatThreshold: 100
   criticalThreshold: 110
-  heatFromRPM: 0.01
-  heatFromLoad: 0.0008
+  heatFromRPM: 0.0001
+  heatFromLoad: 0.001
   coolingBase: 1
   coolingWaterEffect: 7
   waterLossRate: 0.01
