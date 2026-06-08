@@ -16,6 +16,15 @@ public class BrakeLeverInput : MonoBehaviour
     [Range(0f, 1f)]
     private float currentValue;
 
+    private void Start()
+    {
+        Vector3 angles = transform.localEulerAngles;
+        angles.z = releasedAngle;
+        transform.localEulerAngles = angles;
+
+        WriteBrakeValue(0f);
+    }
+
     private void Update()
     {
         float zAngle = NormalizeAngle(transform.localEulerAngles.z);
@@ -28,10 +37,15 @@ public class BrakeLeverInput : MonoBehaviour
 
         currentValue = Mathf.Clamp01(currentValue);
 
+        WriteBrakeValue(currentValue);
+    }
+
+    private void WriteBrakeValue(float value)
+    {
         if (isLeftLever)
-            telemetry.LeftBrakeInput = currentValue;
+            telemetry.LeftBrakeInput = value;
         else
-            telemetry.RightBrakeInput = currentValue;
+            telemetry.RightBrakeInput = value;
     }
 
     private float NormalizeAngle(float angle)

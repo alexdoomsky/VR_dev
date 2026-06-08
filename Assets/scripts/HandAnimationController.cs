@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
@@ -22,6 +21,7 @@ public class Finger
     public FingerType Type;
     public float BlendTargetValue = 0.0f;
     public float BlendCurrentValue = 0.0f;
+
     public Finger(FingerType type)
     {
         Type = type;
@@ -36,14 +36,27 @@ public class HandAnimationController : MonoBehaviour
     [SerializeField] private GameObject _handModel;
     [SerializeField] private float _animationSpeed = 10.0f;
     [SerializeField] private Animator _animator;
-    [SerializeField] private InputActionReference _thumbTouchedAction;
-    [SerializeField] private InputActionReference _triggerAction;
+
+    [Header("Input Actions")]
     [SerializeField] private InputActionReference _gripAction;
+    [SerializeField] private InputActionReference _wipeAction;  // Протирка триплекса
+    [SerializeField] private InputActionReference _okAction;    // Жест "ОК"
+    [SerializeField] private InputActionReference _likeAction;  // Жест "Лайк / большой палец вверх"
 
-    private HandAnimationData _thumbTouched;
-    private HandAnimationData _triggerPressed;
-    private HandAnimationData _gripPressed;
+    // Кулак: все 5 пальцев сжимаются (grip)
+    private HandAnimationData _grabAnimation;
+    // Указание: все пальцы кроме указательного сжимаются (hover рядом с интерактивным объектом)
+    private HandAnimationData _hoverAnimation;
+    // Протирка триплекса: все пальцы кроме большого сжимаются (кнопка _wipeAction)
+    private HandAnimationData _wipeAnimation;
+    // Жест "ОК": большой и указательный ~0.5, средний 0.2, безымянный 0.1, мизинец вытянут
+    private HandAnimationData _okAnimation;
+    // Жест "Лайк": все пальцы сжаты кроме большого — большой вытянут вверх
+    private HandAnimationData _likeAnimation;
 
+    // Счётчик интерактивных объектов в зоне ховера — нужен, если рука одновременно
+    // выходит из одного объекта и входит в другой, чтобы не сбросить анимацию раньше времени.
+    private int _hoverCount = 0;
 
     private void Awake()
     {
@@ -52,23 +65,67 @@ public class HandAnimationController : MonoBehaviour
 
     private void InitializeHandAnimations()
     {
-        // thumbstick touched
-        _thumbTouched = new HandAnimationData(
-             fingers:
-             new List<Finger>() { new Finger(FingerType.Thumb) },
-            targetValues: new List<float> { 0.7f }
+        // Grab / Fist — grip axis двигает все 5 пальцев
+        _grabAnimation = new HandAnimationData(
+            fingers: new List<Finger>
+            {
+                new Finger(FingerType.Thumb),
+                                               new Finger(FingerType.Index),
+                                               new Finger(FingerType.Middle),
+                                               new Finger(FingerType.Ring),
+                                               new Finger(FingerType.Pinky)
+            },
+            targetValues: new List<float> { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }
         );
 
-        // trigger pressed
-        _triggerPressed = new HandAnimationData(
-             fingers: new List<Finger>() { new Finger(FingerType.Index) },
-                targetValues: new List<float> { 1.0f }
+        // Hover / Point — все пальцы кроме указательного (Index остаётся вытянутым)
+        _hoverAnimation = new HandAnimationData(
+            fingers: new List<Finger>
+            {
+                new Finger(FingerType.Thumb),
+                                                new Finger(FingerType.Middle),
+                                                new Finger(FingerType.Ring),
+                                                new Finger(FingerType.Pinky)
+            },
+            targetValues: new List<float> { 0.8f, 0.8f, 0.8f, 0.8f }
         );
 
-        // grip pressed
-        _gripPressed = new HandAnimationData(
-             fingers: new List<Finger>() { new Finger(FingerType.Middle), new Finger(FingerType.Ring), new Finger(FingerType.Pinky) },
-                targetValues: new List<float> { 0.9f, 0.9f, 0.9f }
+        // Wipe / Протирка — все пальцы кроме большого (Thumb остаётся вытянутым)
+        _wipeAnimation = new HandAnimationData(
+            fingers: new List<Finger>
+            {
+                new Finger(FingerType.Index),
+                                               new Finger(FingerType.Middle),
+                                               new Finger(FingerType.Ring),
+                                               new Finger(FingerType.Pinky)
+            },
+            targetValues: new List<float> { 0.9f, 0.9f, 0.9f, 0.9f }
+        );
+
+        // OK — большой и указательный образуют кольцо, остальные расслаблены, мизинец вытянут
+        _okAnimation = new HandAnimationData(
+            fingers: new List<Finger>
+            {
+                new Finger(FingerType.Thumb),
+                                             new Finger(FingerType.Index),
+                                             new Finger(FingerType.Middle),
+                                             new Finger(FingerType.Ring)
+                                             // Pinky не включён — он остаётся вытянутым (значение 0)
+            },
+            targetValues: new List<float> { 0.5f, 0.5f, 0.2f, 0.1f }
+        );
+
+        // Like / Лайк — все пальцы сжаты, большой вытянут вверх
+        _likeAnimation = new HandAnimationData(
+            fingers: new List<Finger>
+            {
+                // Thumb не включён — он остаётся вытянутым (значение 0)
+                new Finger(FingerType.Index),
+                                               new Finger(FingerType.Middle),
+                                               new Finger(FingerType.Ring),
+                                               new Finger(FingerType.Pinky)
+            },
+            targetValues: new List<float> { 1.0f, 1.0f, 1.0f, 1.0f }
         );
     }
 
@@ -78,6 +135,8 @@ public class HandAnimationController : MonoBehaviour
         {
             interactor.selectEntered.AddListener(OnSelect);
             interactor.selectExited.AddListener(OnDeselect);
+            interactor.hoverEntered.AddListener(OnHoverEntered);
+            interactor.hoverExited.AddListener(OnHoverExited);
         }
     }
 
@@ -87,18 +146,30 @@ public class HandAnimationController : MonoBehaviour
         {
             interactor.selectEntered.RemoveListener(OnSelect);
             interactor.selectExited.RemoveListener(OnDeselect);
+            interactor.hoverEntered.RemoveListener(OnHoverEntered);
+            interactor.hoverExited.RemoveListener(OnHoverExited);
         }
     }
 
     private void OnSelect(SelectEnterEventArgs args)
     {
         Debug.Log("[HAND_ANIMATION_CONTROLLER] grabbed!");
-       // HideHands(true);
+        // HideHands(true);
     }
 
     private void OnDeselect(SelectExitEventArgs args)
     {
-      //  HideHands(false);
+        // HideHands(false);
+    }
+
+    private void OnHoverEntered(HoverEnterEventArgs args)
+    {
+        _hoverCount++;
+    }
+
+    private void OnHoverExited(HoverExitEventArgs args)
+    {
+        _hoverCount = Mathf.Max(0, _hoverCount - 1);
     }
 
     private void HideHands(bool state)
@@ -108,47 +179,56 @@ public class HandAnimationController : MonoBehaviour
 
     private void Update()
     {
-        // check values
-        CheckThumb();
+        // Считать input и выставить целевые значения
         CheckGrip();
-        CheckTrigger();
+        CheckHover();
+        CheckWipe();
+        CheckOk();
+        CheckLike();
 
-        // get blended values
-        SmoothFinger(_thumbTouched);
-        SmoothFinger(_triggerPressed);
-        SmoothFinger(_gripPressed);
+        // Плавно двигать текущие значения к целевым
+        SmoothFinger(_hoverAnimation);
+        SmoothFinger(_wipeAnimation);
+        SmoothFinger(_okAnimation);
+        SmoothFinger(_likeAnimation);
+        SmoothFinger(_grabAnimation);
 
-        // apply finger animation
-        AnimateFingers(_thumbTouched);
-        AnimateFingers(_triggerPressed);
-        AnimateFingers(_gripPressed);
-    }
-
-    private void CheckThumb()
-    {
-        if (_thumbTouchedAction == null)
-            return;
-
-        float touchedMod = _thumbTouchedAction.action.ReadValue<float>();
-        SetFingerTargetValues(_thumbTouched, value: touchedMod);
+        // Смёрджить все анимации через Mathf.Max и отправить в Animator
+        ApplyFinalFingerValues();
     }
 
     private void CheckGrip()
     {
-        if (_gripAction == null)
-            return;
-
+        if (_gripAction == null) return;
         float gripValue = _gripAction.action.ReadValue<float>();
-        SetFingerTargetValues(_gripPressed, gripValue);
+        SetFingerTargetValues(_grabAnimation, gripValue);
     }
 
-    private void CheckTrigger()
+    private void CheckHover()
     {
-        if (_triggerAction == null)
-            return;
+        float hoverValue = _hoverCount > 0 ? 1f : 0f;
+        SetFingerTargetValues(_hoverAnimation, hoverValue);
+    }
 
-        float triggerValue = _triggerAction.action.ReadValue<float>();
-        SetFingerTargetValues(_triggerPressed, triggerValue);
+    private void CheckWipe()
+    {
+        if (_wipeAction == null) return;
+        float wipeValue = _wipeAction.action.ReadValue<float>();
+        SetFingerTargetValues(_wipeAnimation, wipeValue);
+    }
+
+    private void CheckOk()
+    {
+        if (_okAction == null) return;
+        float okValue = _okAction.action.ReadValue<float>();
+        SetFingerTargetValues(_okAnimation, okValue);
+    }
+
+    private void CheckLike()
+    {
+        if (_likeAction == null) return;
+        float likeValue = _likeAction.action.ReadValue<float>();
+        SetFingerTargetValues(_likeAnimation, likeValue);
     }
 
     private void SetFingerTargetValues(HandAnimationData handAnimation, float value)
@@ -161,21 +241,48 @@ public class HandAnimationController : MonoBehaviour
     {
         for (int i = 0; i < handAnimation.Fingers.Count; i++)
         {
-            float time = _animationSpeed * Time.deltaTime;
-            handAnimation.Fingers[i].BlendCurrentValue = Mathf.MoveTowards(handAnimation.Fingers[i].BlendCurrentValue, handAnimation.Fingers[i].BlendTargetValue, time);
+            float step = _animationSpeed * Time.deltaTime;
+            handAnimation.Fingers[i].BlendCurrentValue = Mathf.MoveTowards(
+                handAnimation.Fingers[i].BlendCurrentValue,
+                handAnimation.Fingers[i].BlendTargetValue,
+                step
+            );
         }
     }
 
-    private void AnimateFingers(HandAnimationData handAnimation)
+    /// <summary>
+    /// Для каждого пальца берём максимальное значение из всех активных анимаций
+    /// и отправляем в Animator. Это гарантирует, что неактивная анимация (значение 0)
+    /// не затирает активную — проблема оригинальной цепочки AnimateFingers().
+    /// </summary>
+    private void ApplyFinalFingerValues()
+    {
+        var finalValues = new Dictionary<FingerType, float>
+        {
+            { FingerType.Thumb,  0f },
+            { FingerType.Index,  0f },
+            { FingerType.Middle, 0f },
+            { FingerType.Ring,   0f },
+            { FingerType.Pinky,  0f }
+        };
+
+        MergeFingerValues(_hoverAnimation, finalValues);
+        MergeFingerValues(_wipeAnimation,  finalValues);
+        MergeFingerValues(_okAnimation,    finalValues);
+        MergeFingerValues(_likeAnimation,  finalValues);
+        MergeFingerValues(_grabAnimation,  finalValues);
+
+        foreach (var kvp in finalValues)
+            _animator.SetFloat(kvp.Key.ToString(), kvp.Value);
+    }
+
+    private void MergeFingerValues(HandAnimationData handAnimation, Dictionary<FingerType, float> finalValues)
     {
         for (int i = 0; i < handAnimation.Fingers.Count; i++)
         {
-            AnimateFinger(handAnimation.Fingers[i].Type.ToString(), handAnimation.Fingers[i].BlendCurrentValue);
+            FingerType ft = handAnimation.Fingers[i].Type;
+            finalValues[ft] = Mathf.Max(finalValues[ft], handAnimation.Fingers[i].BlendCurrentValue);
         }
     }
-
-    private void AnimateFinger(string finger, float blendValue)
-    {
-        _animator.SetFloat(finger, blendValue);
-    }
 }
+
