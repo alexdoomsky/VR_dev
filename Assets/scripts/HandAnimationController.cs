@@ -41,7 +41,6 @@ public class HandAnimationController : MonoBehaviour
     [SerializeField] private InputActionReference _gripAction;
     [SerializeField] private InputActionReference _wipeAction;  // Протирка триплекса
     [SerializeField] private InputActionReference _okAction;    // Жест "ОК"
-    [SerializeField] private InputActionReference _likeAction;  // Жест "Лайк / большой палец вверх"
 
     // Кулак: все 5 пальцев сжимаются (grip)
     private HandAnimationData _grabAnimation;
@@ -51,8 +50,7 @@ public class HandAnimationController : MonoBehaviour
     private HandAnimationData _wipeAnimation;
     // Жест "ОК": большой и указательный ~0.5, средний 0.2, безымянный 0.1, мизинец вытянут
     private HandAnimationData _okAnimation;
-    // Жест "Лайк": все пальцы сжаты кроме большого — большой вытянут вверх
-    private HandAnimationData _likeAnimation;
+
 
     // Счётчик интерактивных объектов в зоне ховера — нужен, если рука одновременно
     // выходит из одного объекта и входит в другой, чтобы не сбросить анимацию раньше времени.
@@ -114,19 +112,6 @@ public class HandAnimationController : MonoBehaviour
             },
             targetValues: new List<float> { 0.5f, 0.5f, 0.2f, 0.1f }
         );
-
-        // Like / Лайк — все пальцы сжаты, большой вытянут вверх
-        _likeAnimation = new HandAnimationData(
-            fingers: new List<Finger>
-            {
-                // Thumb не включён — он остаётся вытянутым (значение 0)
-                new Finger(FingerType.Index),
-                                               new Finger(FingerType.Middle),
-                                               new Finger(FingerType.Ring),
-                                               new Finger(FingerType.Pinky)
-            },
-            targetValues: new List<float> { 1.0f, 1.0f, 1.0f, 1.0f }
-        );
     }
 
     private void OnEnable()
@@ -164,11 +149,17 @@ public class HandAnimationController : MonoBehaviour
 
     private void OnHoverEntered(HoverEnterEventArgs args)
     {
+        if (args.interactableObject is UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable)
+            return;
+
         _hoverCount++;
     }
 
     private void OnHoverExited(HoverExitEventArgs args)
     {
+        if (args.interactableObject is UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable)
+            return;
+
         _hoverCount = Mathf.Max(0, _hoverCount - 1);
     }
 
@@ -184,13 +175,11 @@ public class HandAnimationController : MonoBehaviour
         CheckHover();
         CheckWipe();
         CheckOk();
-        CheckLike();
 
         // Плавно двигать текущие значения к целевым
         SmoothFinger(_hoverAnimation);
         SmoothFinger(_wipeAnimation);
         SmoothFinger(_okAnimation);
-        SmoothFinger(_likeAnimation);
         SmoothFinger(_grabAnimation);
 
         // Смёрджить все анимации через Mathf.Max и отправить в Animator
@@ -224,12 +213,6 @@ public class HandAnimationController : MonoBehaviour
         SetFingerTargetValues(_okAnimation, okValue);
     }
 
-    private void CheckLike()
-    {
-        if (_likeAction == null) return;
-        float likeValue = _likeAction.action.ReadValue<float>();
-        SetFingerTargetValues(_likeAnimation, likeValue);
-    }
 
     private void SetFingerTargetValues(HandAnimationData handAnimation, float value)
     {
@@ -269,7 +252,6 @@ public class HandAnimationController : MonoBehaviour
         MergeFingerValues(_hoverAnimation, finalValues);
         MergeFingerValues(_wipeAnimation,  finalValues);
         MergeFingerValues(_okAnimation,    finalValues);
-        MergeFingerValues(_likeAnimation,  finalValues);
         MergeFingerValues(_grabAnimation,  finalValues);
 
         foreach (var kvp in finalValues)
@@ -285,4 +267,3 @@ public class HandAnimationController : MonoBehaviour
         }
     }
 }
-
