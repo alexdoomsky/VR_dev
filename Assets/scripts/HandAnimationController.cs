@@ -3,12 +3,24 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+//VISUAL
+//GIVEN-UPDATED
 
+// struct = value type (тип-значение)
+// В отличие от class хранится обычно в стеке и копируется целиком.
+//
+// Хранит набор пальцев и их целевые значения для конкретной анимации.
 public struct HandAnimationData
 {
+    // readonly запрещает заменять ссылку после создания структуры.
+    // Сам объект List менять можно, но присвоить новый List нельзя.
     public readonly List<Finger> Fingers;
+
+    // Целевые коэффициенты сгибания пальцев.
     public readonly List<float> TargetValues;
 
+    // Конструктор структуры.
+    // Вызывается при создании через new HandAnimationData(...)
     public HandAnimationData(List<Finger> fingers, List<float> targetValues)
     {
         Fingers = fingers;
@@ -16,54 +28,120 @@ public struct HandAnimationData
     }
 }
 
+// Класс отдельного пальца.
 public class Finger
 {
+    // Тип пальца.
     public FingerType Type;
+
+    // Значение, к которому должен стремиться палец.
     public float BlendTargetValue = 0.0f;
+
+    // Текущее сглаженное значение.
     public float BlendCurrentValue = 0.0f;
 
+    // Конструктор класса.
     public Finger(FingerType type)
     {
         Type = type;
     }
 }
 
-public enum FingerType { Thumb, Index, Middle, Ring, Pinky }
+// enum = перечисление фиксированных значений.
+//
+// Используется вместо строк:
+// лучше писать FingerType.Thumb
+// чем "Thumb"
+public enum FingerType
+{
+    Thumb,
+    Index,
+    Middle,
+    Ring,
+    Pinky
+}
 
+// Контроллер анимации руки.
+//
+// Отвечает за:
+// - чтение input
+// - отслеживание hover/select событий XR
+// - расчёт целевых поз пальцев
+// - плавную интерполяцию
+// - передачу значений в Animator
 public class HandAnimationController : MonoBehaviour
 {
     [SerializeField] private XRBaseInputInteractor[] _interactors;
+
+    // XRBaseInputInteractor
+    // базовый класс XR контроллеров взаимодействия.
+    //
+    // Через него приходят события:
+    // selectEntered
+    // selectExited
+    // hoverEntered
+    // hoverExited
+
     [SerializeField] private GameObject _handModel;
+
+    // Скорость сглаживания анимации.
     [SerializeField] private float _animationSpeed = 10.0f;
+
+    // Unity Animator.
+    // Управляет параметрами анимационного графа.
     [SerializeField] private Animator _animator;
 
     [Header("Input Actions")]
-    [SerializeField] private InputActionReference _gripAction;
-    [SerializeField] private InputActionReference _wipeAction;  // Протирка триплекса
-    [SerializeField] private InputActionReference _okAction;    // Жест "ОК"
 
-    // Кулак: все 5 пальцев сжимаются (grip)
+    // Сила сжатия кисти.
+    [SerializeField] private InputActionReference _gripAction;
+
+    // Отдельное действие для протирки триплекса.
+    [SerializeField] private InputActionReference _wipeAction;
+
+    // Отдельное действие для жеста ОК.
+    [SerializeField] private InputActionReference _okAction;
+
+    // ===== Наборы анимаций =====
+
+    // Кулак.
     private HandAnimationData _grabAnimation;
-    // Указание: все пальцы кроме указательного сжимаются (hover рядом с интерактивным объектом)
+
+    // Указание пальцем.
     private HandAnimationData _hoverAnimation;
-    // Протирка триплекса: все пальцы кроме большого сжимаются (кнопка _wipeAction)
+
+    // Протирка.
     private HandAnimationData _wipeAnimation;
-    // Жест "ОК": большой и указательный ~0.5, средний 0.2, безымянный 0.1, мизинец вытянут
+
+    // Жест ОК.
     private HandAnimationData _okAnimation;
 
-
-    // Счётчик интерактивных объектов в зоне ховера — нужен, если рука одновременно
-    // выходит из одного объекта и входит в другой, чтобы не сбросить анимацию раньше времени.
+    // Количество объектов под курсором руки.
+    //
+    // Почему int а не bool?
+    //
+    // Потому что одновременно можно навести руку
+    // сразу на несколько объектов.
+    //
+    // Если использовать bool:
+    // вошли в объект А
+    // вошли в объект Б
+    // вышли из объекта А
+    // bool станет false
+    //
+    // хотя объект Б всё ещё наведен.
     private int _hoverCount = 0;
 
+    // Awake вызывается раньше Start.
     private void Awake()
     {
         InitializeHandAnimations();
     }
 
+    // Создание всех конфигураций анимаций.
     private void InitializeHandAnimations()
     {
-        // Grab / Fist — grip axis двигает все 5 пальцев
+        // Все пять пальцев участвуют.
         _grabAnimation = new HandAnimationData(
             fingers: new List<Finger>
             {
@@ -73,10 +151,13 @@ public class HandAnimationController : MonoBehaviour
                                                new Finger(FingerType.Ring),
                                                new Finger(FingerType.Pinky)
             },
-            targetValues: new List<float> { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }
+            targetValues: new List<float>
+            {
+                1.0f,1.0f,1.0f,1.0f,1.0f
+            }
         );
 
-        // Hover / Point — все пальцы кроме указательного (Index остаётся вытянутым)
+        // Указательный остаётся прямым.
         _hoverAnimation = new HandAnimationData(
             fingers: new List<Finger>
             {
@@ -85,10 +166,13 @@ public class HandAnimationController : MonoBehaviour
                                                 new Finger(FingerType.Ring),
                                                 new Finger(FingerType.Pinky)
             },
-            targetValues: new List<float> { 0.8f, 0.8f, 0.8f, 0.8f }
+            targetValues: new List<float>
+            {
+                0.8f,0.8f,0.8f,0.8f
+            }
         );
 
-        // Wipe / Протирка — все пальцы кроме большого (Thumb остаётся вытянутым)
+        // Большой палец прямой.
         _wipeAnimation = new HandAnimationData(
             fingers: new List<Finger>
             {
@@ -97,10 +181,13 @@ public class HandAnimationController : MonoBehaviour
                                                new Finger(FingerType.Ring),
                                                new Finger(FingerType.Pinky)
             },
-            targetValues: new List<float> { 0.9f, 0.9f, 0.9f, 0.9f }
+            targetValues: new List<float>
+            {
+                0.9f,0.9f,0.9f,0.9f
+            }
         );
 
-        // OK — большой и указательный образуют кольцо, остальные расслаблены, мизинец вытянут
+        // Жест ОК.
         _okAnimation = new HandAnimationData(
             fingers: new List<Finger>
             {
@@ -108,124 +195,184 @@ public class HandAnimationController : MonoBehaviour
                                              new Finger(FingerType.Index),
                                              new Finger(FingerType.Middle),
                                              new Finger(FingerType.Ring)
-                                             // Pinky не включён — он остаётся вытянутым (значение 0)
             },
-            targetValues: new List<float> { 0.5f, 0.5f, 0.2f, 0.1f }
+            targetValues: new List<float>
+            {
+                0.5f,0.5f,0.2f,0.1f
+            }
         );
     }
 
+    // Подписка на XR события.
     private void OnEnable()
     {
         foreach (var interactor in _interactors)
         {
+            // AddListener регистрирует обработчик события.
+
             interactor.selectEntered.AddListener(OnSelect);
             interactor.selectExited.AddListener(OnDeselect);
+
             interactor.hoverEntered.AddListener(OnHoverEntered);
             interactor.hoverExited.AddListener(OnHoverExited);
         }
     }
 
+    // Отписка от XR событий.
+    //
+    // Важно:
+    // если не отписаться могут появиться
+    // двойные вызовы событий.
     private void OnDisable()
     {
         foreach (var interactor in _interactors)
         {
             interactor.selectEntered.RemoveListener(OnSelect);
             interactor.selectExited.RemoveListener(OnDeselect);
+
             interactor.hoverEntered.RemoveListener(OnHoverEntered);
             interactor.hoverExited.RemoveListener(OnHoverExited);
         }
     }
 
+    // Вызывается при захвате объекта.
     private void OnSelect(SelectEnterEventArgs args)
     {
         Debug.Log("[HAND_ANIMATION_CONTROLLER] grabbed!");
-        // HideHands(true);
     }
 
+    // Вызывается при отпускании объекта.
     private void OnDeselect(SelectExitEventArgs args)
     {
-        // HideHands(false);
     }
 
+    // Вызывается когда рука навелась на объект.
     private void OnHoverEntered(HoverEnterEventArgs args)
     {
+        // is = проверка типа объекта.
+        //
+        // XRGrabInteractable
+        // стандартный XR объект который можно брать.
         if (args.interactableObject is UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable)
             return;
 
         _hoverCount++;
     }
 
+    // Вызывается при выходе курсора руки.
     private void OnHoverExited(HoverExitEventArgs args)
     {
         if (args.interactableObject is UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable)
             return;
 
+        // Mathf.Max возвращает большее из двух значений.
+        //
+        // Нужен чтобы счётчик не ушёл ниже нуля.
         _hoverCount = Mathf.Max(0, _hoverCount - 1);
     }
 
+    // Скрыть/показать модель руки.
     private void HideHands(bool state)
     {
+        // SetActive включает или выключает объект.
         _handModel.SetActive(!state);
     }
 
+    // Главный игровой цикл.
     private void Update()
     {
-        // Считать input и выставить целевые значения
+        // Получаем input.
         CheckGrip();
         CheckHover();
         CheckWipe();
         CheckOk();
 
-        // Плавно двигать текущие значения к целевым
+        // Сглаживаем значения.
         SmoothFinger(_hoverAnimation);
         SmoothFinger(_wipeAnimation);
         SmoothFinger(_okAnimation);
         SmoothFinger(_grabAnimation);
 
-        // Смёрджить все анимации через Mathf.Max и отправить в Animator
+        // Передаём в Animator.
         ApplyFinalFingerValues();
     }
 
     private void CheckGrip()
     {
-        if (_gripAction == null) return;
-        float gripValue = _gripAction.action.ReadValue<float>();
+        if (_gripAction == null)
+            return;
+
+        // ReadValue<float>()
+        // получает текущее значение action.
+        float gripValue =
+        _gripAction.action.ReadValue<float>();
+
         SetFingerTargetValues(_grabAnimation, gripValue);
     }
 
     private void CheckHover()
     {
-        float hoverValue = _hoverCount > 0 ? 1f : 0f;
+        // Тернарный оператор.
+        //
+        // условие ? значение1 : значение2
+        float hoverValue =
+        _hoverCount > 0 ? 1f : 0f;
+
         SetFingerTargetValues(_hoverAnimation, hoverValue);
     }
 
     private void CheckWipe()
     {
-        if (_wipeAction == null) return;
-        float wipeValue = _wipeAction.action.ReadValue<float>();
+        if (_wipeAction == null)
+            return;
+
+        float wipeValue =
+        _wipeAction.action.ReadValue<float>();
+
         SetFingerTargetValues(_wipeAnimation, wipeValue);
     }
 
     private void CheckOk()
     {
-        if (_okAction == null) return;
-        float okValue = _okAction.action.ReadValue<float>();
+        if (_okAction == null)
+            return;
+
+        float okValue =
+        _okAction.action.ReadValue<float>();
+
         SetFingerTargetValues(_okAnimation, okValue);
     }
 
-
-    private void SetFingerTargetValues(HandAnimationData handAnimation, float value)
+    // Вычисляет целевые значения пальцев.
+    private void SetFingerTargetValues(
+        HandAnimationData handAnimation,
+        float value)
     {
         for (int i = 0; i < handAnimation.Fingers.Count; i++)
-            handAnimation.Fingers[i].BlendTargetValue = handAnimation.TargetValues[i] * value;
+        {
+            handAnimation.Fingers[i].BlendTargetValue =
+            handAnimation.TargetValues[i] * value;
+        }
     }
 
+    // Сглаживание движения пальцев.
     private void SmoothFinger(HandAnimationData handAnimation)
     {
         for (int i = 0; i < handAnimation.Fingers.Count; i++)
         {
-            float step = _animationSpeed * Time.deltaTime;
-            handAnimation.Fingers[i].BlendCurrentValue = Mathf.MoveTowards(
+            float step =
+            _animationSpeed * Time.deltaTime;
+
+            // MoveTowards
+            //
+            // current
+            // target
+            // maxDelta
+            //
+            // Двигает значение к цели
+            // не превышая step за кадр.
+            handAnimation.Fingers[i].BlendCurrentValue =
+            Mathf.MoveTowards(
                 handAnimation.Fingers[i].BlendCurrentValue,
                 handAnimation.Fingers[i].BlendTargetValue,
                 step
@@ -233,37 +380,62 @@ public class HandAnimationController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Для каждого пальца берём максимальное значение из всех активных анимаций
-    /// и отправляем в Animator. Это гарантирует, что неактивная анимация (значение 0)
-    /// не затирает активную — проблема оригинальной цепочки AnimateFingers().
-    /// </summary>
+    // Слияние всех анимаций.
+    //
+    // Если один палец участвует в нескольких позах,
+    // берётся максимальное значение.
     private void ApplyFinalFingerValues()
     {
-        var finalValues = new Dictionary<FingerType, float>
+        // Dictionary<TKey,TValue>
+        //
+        // коллекция ключ-значение.
+        //
+        // здесь:
+        // FingerType → float
+        var finalValues =
+        new Dictionary<FingerType, float>
         {
-            { FingerType.Thumb,  0f },
-            { FingerType.Index,  0f },
+            { FingerType.Thumb, 0f },
+            { FingerType.Index, 0f },
             { FingerType.Middle, 0f },
-            { FingerType.Ring,   0f },
-            { FingerType.Pinky,  0f }
+            { FingerType.Ring, 0f },
+            { FingerType.Pinky, 0f }
         };
 
         MergeFingerValues(_hoverAnimation, finalValues);
-        MergeFingerValues(_wipeAnimation,  finalValues);
-        MergeFingerValues(_okAnimation,    finalValues);
-        MergeFingerValues(_grabAnimation,  finalValues);
+        MergeFingerValues(_wipeAnimation, finalValues);
+        MergeFingerValues(_okAnimation, finalValues);
+        MergeFingerValues(_grabAnimation, finalValues);
 
+        // foreach перебирает коллекцию.
         foreach (var kvp in finalValues)
-            _animator.SetFloat(kvp.Key.ToString(), kvp.Value);
+        {
+            // kvp.Key = палец
+            // kvp.Value = итоговое значение
+
+            _animator.SetFloat(
+                kvp.Key.ToString(),
+                               kvp.Value
+            );
+        }
     }
 
-    private void MergeFingerValues(HandAnimationData handAnimation, Dictionary<FingerType, float> finalValues)
+    // Объединяет значения одной анимации
+    // с итоговым словарём.
+    private void MergeFingerValues(
+        HandAnimationData handAnimation,
+        Dictionary<FingerType, float> finalValues)
     {
         for (int i = 0; i < handAnimation.Fingers.Count; i++)
         {
-            FingerType ft = handAnimation.Fingers[i].Type;
-            finalValues[ft] = Mathf.Max(finalValues[ft], handAnimation.Fingers[i].BlendCurrentValue);
+            FingerType ft =
+            handAnimation.Fingers[i].Type;
+
+            finalValues[ft] =
+            Mathf.Max(
+                finalValues[ft],
+                handAnimation.Fingers[i].BlendCurrentValue
+            );
         }
     }
 }

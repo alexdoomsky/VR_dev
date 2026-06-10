@@ -4,107 +4,175 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Отладочный оверлей с телеметрией танка и FPS
+//DEBUG
+//VISUAL
 public class TankDebugOverlay : MonoBehaviour
 {
     [Header("References")]
+
+    // Общая телеметрия танка
     [SerializeField] private TankTelemetry telemetry;
 
+    // Текстовое поле TextMeshPro
     [SerializeField] private TextMeshProUGUI output;
 
     [Header("Input")]
+
+    // Ссылка на левый триггер контроллера
     [SerializeField] private InputActionReference leftTrigger;
 
+    // Ссылка на правый триггер контроллера
     [SerializeField] private InputActionReference rightTrigger;
 
     [Header("Performance")]
+
+    // Интервал обновления текста
     [SerializeField] private float updateInterval = 0.1f;
 
+    // FPS считается хорошим выше этого значения
     [SerializeField] private float goodFpsThreshold = 72f;
+
+    // FPS считается плохим ниже этого значения
     [SerializeField] private float badFpsThreshold = 50f;
 
+    // Усреднённое время кадра
     private float deltaTime;
+
+    // Время кадра в миллисекундах
     private float milliseconds;
+
+    // Количество кадров в секунду
     private int fps;
 
+    // Значение левого триггера
     private float leftTriggerValue;
+
+    // Значение правого триггера
     private float rightTriggerValue;
 
+    // Кэшированный объект ожидания для корутины
     private WaitForSeconds waitTime;
 
+    // Вызывается при создании объекта
     private void Awake()
     {
+        // Если ссылка не назначена вручную
         if (output == null)
+
+            // GetComponent<T>()
+            // Получает компонент указанного типа
             output = GetComponent<TextMeshProUGUI>();
     }
 
+    // Вызывается при включении объекта
     private void OnEnable()
     {
+        // ?. проверяет что объект не null
+
         leftTrigger?.action.Enable();
         rightTrigger?.action.Enable();
     }
 
+    // Вызывается при выключении объекта
     private void OnDisable()
     {
         leftTrigger?.action.Disable();
         rightTrigger?.action.Disable();
     }
 
+    // Вызывается Unity один раз после Awake
     private void Start()
     {
+        // WaitForSeconds заставляет корутину ждать указанное время
         waitTime = new WaitForSeconds(updateInterval);
 
+        // Запуск корутины
         StartCoroutine(UpdateOverlay());
     }
 
+    // Вызывается каждый кадр
     private void Update()
     {
         CalculateFPS();
 
         if (leftTrigger != null)
-            leftTriggerValue = leftTrigger.action.ReadValue<float>();
+
+            // ReadValue<float>()
+            // Считывает текущее значение Input Action
+            leftTriggerValue =
+            leftTrigger.action.ReadValue<float>();
 
         if (rightTrigger != null)
-            rightTriggerValue = rightTrigger.action.ReadValue<float>();
+            rightTriggerValue =
+            rightTrigger.action.ReadValue<float>();
     }
 
+    // Вычисляет FPS и время кадра
     private void CalculateFPS()
     {
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+        // Time.unscaledDeltaTime
+        // Время кадра без учёта Time.timeScale
 
-        milliseconds = deltaTime * 1000f;
+        deltaTime +=
+        (Time.unscaledDeltaTime - deltaTime)
+        * 0.1f;
+
+        milliseconds =
+        deltaTime * 1000f;
 
         if (deltaTime > 0f)
-            fps = Mathf.RoundToInt(1f / deltaTime);
+
+            // RoundToInt()
+            // Округляет число до int
+            fps =
+            Mathf.RoundToInt(
+                1f / deltaTime
+            );
     }
 
+    // Корутина обновления текста
     private IEnumerator UpdateOverlay()
     {
+        // Бесконечный цикл
         while (true)
         {
             RefreshText();
 
+            // yield return приостанавливает выполнение корутины
             yield return waitTime;
         }
     }
 
+    // Формирует текст отладочной панели
     private void RefreshText()
     {
         if (output == null)
             return;
 
+        // Изменение цвета по FPS
         if (fps >= goodFpsThreshold)
+
+            // Color.green
+            // Предопределённый зелёный цвет Unity
             output.color = Color.green;
+
         else if (fps >= badFpsThreshold)
             output.color = Color.yellow;
+
         else
             output.color = Color.red;
 
-        StringBuilder sb = new StringBuilder(1024);
+        // StringBuilder эффективнее обычной конкатенации строк
+        StringBuilder sb =
+        new StringBuilder(1024);
 
+        // AppendLine()
+        // Добавляет строку и символ переноса
         sb.AppendLine("========== PERFORMANCE ==========");
         sb.AppendLine($"FPS        : {fps}");
         sb.AppendLine($"Frame Time : {milliseconds:F1} ms");
-
+		// :Fn - количество знаков после запятой
         sb.AppendLine();
         sb.AppendLine("============= INPUT =============");
         sb.AppendLine($"Left Trigger  : {leftTriggerValue:F2}");
@@ -115,9 +183,14 @@ public class TankDebugOverlay : MonoBehaviour
             sb.AppendLine();
             sb.AppendLine("TankTelemetry NOT ASSIGNED");
 
+            // ToString()
+            // Преобразует StringBuilder в строку
             output.text = sb.ToString();
+
             return;
         }
+
+        // Формирование разделов телеметрии
 
         sb.AppendLine();
         sb.AppendLine("============ ENGINE ============");
@@ -168,6 +241,7 @@ public class TankDebugOverlay : MonoBehaviour
         sb.AppendLine($"Temp       : {telemetry.EngineTemperature:F1}");
         sb.AppendLine($"Oil Press. : {telemetry.OilPressure:F1}");
         sb.AppendLine($"Water level : {telemetry.WaterLevel:F1}");
+
         sb.AppendLine();
         sb.AppendLine("============ START =============");
         sb.AppendLine($"Fuel       : {telemetry.FuelEnabled}");
@@ -175,6 +249,7 @@ public class TankDebugOverlay : MonoBehaviour
         sb.AppendLine($"Ignition   : {telemetry.IgnitionEnabled}");
         sb.AppendLine($"Can Start  : {telemetry.CanStartEngine}");
 
+        // Вывод готового текста на экран
         output.text = sb.ToString();
     }
 }
