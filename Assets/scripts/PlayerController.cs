@@ -50,15 +50,6 @@ public class PlayerController : MonoBehaviour
     // Unity lifecycle method:
     // вызывается ОДИН раз перед первым Update
     // гарантирует что все Awake() уже выполнены
-    private void Start()
-    {
-        // PlayerLogger — внешний static класс (не Unity API)
-        // Initialize() — предположительно:
-        // - создаёт buffer логов
-        // - или подключает output (console/file/UI)
-        PlayerLogger.Initialize();
-    }
-
     // OnEnable()
     // вызывается каждый раз когда GameObject или компонент становится активным
     // важно: может вызываться МНОГО РАЗ за жизнь объекта

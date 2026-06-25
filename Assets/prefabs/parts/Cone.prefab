@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6220807918820706453}
   - component: {fileID: 1479686541001858568}
   - component: {fileID: 5516386394832578390}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,11 +167,45 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrafficDrum Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1829666492479550755, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1829666492479550755, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4017800432623762805}
   m_SourcePrefab: {fileID: 100100000, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}
+--- !u!1 &7360610156697652648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1829666492479550755, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}
+  m_PrefabInstance: {fileID: 9170001791393544331}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &4017800432623762805
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7360610156697652648}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 273523057347106957, guid: a0387b96b236db44c819157896d72864, type: 3}
 --- !u!4 &7885226102860863250 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1310432418772938649, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}

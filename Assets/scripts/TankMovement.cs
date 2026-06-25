@@ -1,31 +1,42 @@
 using UnityEngine;
 
-// Управляет движением и поворотом танка
+// Управляет движением и поворотом танка через Rigidbody
+[RequireComponent(typeof(Rigidbody))]
 public class TankMovement : MonoBehaviour
 {
     [Header("References")]
-
-    // Общая телеметрия танка
     [SerializeField] private TankTelemetry telemetry;
+    [SerializeField] private Rigidbody rb;
 
     [Header("Movement")]
 
-    // Скорость разгона
-    [SerializeField] private float acceleration = 8f;
+    [Tooltip("Максимальная тяга двигателя")]
+    [SerializeField] private float maxDriveForce = 900000f;
 
-    // Скорость замедления
-    [SerializeField] private float deceleration = 3f;
+    [Tooltip("Тормозное усилие")]
+    [SerializeField] private float brakeForce = 25000f;
+
+    [Tooltip("Смещение точки приложения тяги назад от центра")]
+    [SerializeField] private float driveForceOffset = 1.5f;
+
+    [Tooltip("Смещение точки приложения тяги вниз")]
+    [SerializeField] private float driveForceDownOffset = 0.3f;
 
     [Header("Turning")]
 
-    // Максимальная скорость поворота
-    [SerializeField] private float turnRate = 50f;
+    [SerializeField] private float turnTorque = 150000f;
 
-    // Текущая скорость танка
-    private float currentSpeedKmh;
+    private void Awake()
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
 
-    // Вызывается Unity каждый кадр
-    private void Update()
+        // Если начнёт сильно кувыркаться,
+        // раскомментируй и подбери значение.
+        // rb.centerOfMass = new Vector3(0f, -0.8f, 0f);
+    }
+
+    private void FixedUpdate()
     {
         if (telemetry == null)
             return;
@@ -34,93 +45,92 @@ public class TankMovement : MonoBehaviour
         UpdateTurning();
     }
 
-    // Обновляет скорость и перемещение танка
     private void UpdateSpeed()
     {
-        // Желаемая скорость от коробки передач
-        float targetSpeed = telemetry.TargetSpeedKmh;
+        Vector3 planarForward =
+        Vector3.ProjectOnPlane(
+            transform.forward,
+            Vector3.up
+        ).normalized;
 
-        // Тернарный оператор
-        // Если нужно разгоняться -> acceleration
-        // Если нужно тормозить -> deceleration
-        float speedChangeRate =
-        Mathf.Abs(targetSpeed) > Mathf.Abs(currentSpeedKmh)
-        ? acceleration
-        : deceleration;
-
-        // Mathf.MoveTowards()
-        // Двигает значение к цели с фиксированной скоростью
-        currentSpeedKmh = Mathf.MoveTowards(
-            currentSpeedKmh,
-            targetSpeed,
-
-            // Time.deltaTime
-            // Время между кадрами
-            speedChangeRate * Time.deltaTime * 10f
+        float currentSpeedMs =
+        Vector3.Dot(
+            rb.linearVelocity,
+            planarForward
         );
 
-        // Сохраняем скорость в телеметрию
+        float currentSpeedKmh =
+        currentSpeedMs * 3.6f;
+
+        float targetSpeedKmh =
+        telemetry.TargetSpeedKmh;
+
+        float speedError =
+        targetSpeedKmh - currentSpeedKmh;
+
+        // Ограничиваем ошибку скорости
+        speedError =
+        Mathf.Clamp(
+            speedError,
+            -20f,
+            20f
+        );
+
+        float driveForce =
+        speedError / 20f *
+        maxDriveForce;
+
+        Vector3 forcePoint =
+        transform.position
+        - transform.forward * driveForceOffset
+        - transform.up * driveForceDownOffset;
+
+        rb.AddForceAtPosition(
+            planarForward * driveForce,
+            forcePoint,
+                ForceMode.Force
+        );
+
+        if (Mathf.Abs(targetSpeedKmh) < 0.1f)
+        {
+            Vector3 horizontalVelocity =
+            new Vector3(
+                rb.linearVelocity.x,
+                0f,
+                rb.linearVelocity.z
+            );
+
+            rb.AddForce(
+                -horizontalVelocity * brakeForce,
+                ForceMode.Force
+            );
+        }
+
+        telemetry.SpeedMs = currentSpeedMs;
         telemetry.SpeedKmh = currentSpeedKmh;
-
-        // Перевод км/ч в м/с
-        //
-        // 1 м/с = 3.6 км/ч
-        telemetry.SpeedMs =
-        currentSpeedKmh / 3.6f;
-
-        // transform.forward
-        // Направление вперёд относительно объекта
-        //
-        // transform.position
-        // Текущая позиция объекта
-        transform.position +=
-        transform.forward *
-        telemetry.SpeedMs *
-        Time.deltaTime;
     }
 
-    // Обновляет поворот танка
     private void UpdateTurning()
     {
-        // Разница между левым и правым тормозом
-        //
-        // Если правый тормозит сильнее:
-        // значение положительное
-        //
-        // Если левый тормозит сильнее:
-        // значение отрицательное
         float steering =
         telemetry.RightBrakeInput -
         telemetry.LeftBrakeInput;
 
-        // Mathf.Abs()
-        // Возвращает модуль числа
-        //
-        // Mathf.Clamp01()
-        // Ограничивает диапазоном 0..1
         float speedFactor =
         Mathf.Clamp01(
-            Mathf.Abs(currentSpeedKmh) / 20f
+            Mathf.Abs(telemetry.SpeedKmh) / 10f
         );
 
-        // Итоговая скорость поворота
-        float rotation =
+        float torque =
         steering *
-        turnRate *
+        turnTorque *
         speedFactor;
 
-        // transform.Rotate()
-        // Поворачивает объект на указанные углы
-        transform.Rotate(
-            0f,
-
-            // Поворот вокруг оси Y
-            rotation * Time.deltaTime,
-
-            0f
+        rb.AddTorque(
+            Vector3.up * torque,
+            ForceMode.Force
         );
 
-        // Сохраняем скорость поворота
-        telemetry.TurnRate = rotation;
+        telemetry.TurnRate = torque;
     }
 }
