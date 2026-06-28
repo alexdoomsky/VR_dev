@@ -642,7 +642,7 @@ GameObject:
   - component: {fileID: 8469929200868843928}
   - component: {fileID: 3883255705972350799}
   - component: {fileID: 5946763445554146353}
-  - component: {fileID: 1038502600938596200}
+  - component: {fileID: 7247218259429736151}
   m_Layer: 0
   m_Name: FuelButton
   m_TagString: Untagged
@@ -785,7 +785,7 @@ MonoBehaviour:
   m_ClampToMaxDistance: 1
   m_MaxDistance: 0.01650002
   m_PokeFilter: {fileID: 3883255705972350799}
---- !u!114 &1038502600938596200
+--- !u!114 &7247218259429736151
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -794,9 +794,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7068163763924152028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b48e8510224b7aae9bd138090f3beebb, type: 3}
+  m_Script: {fileID: 11500000, guid: 733e7d3c81ff83378b7ea44b9b7c80dd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
+  m_EditorClassIdentifier: Assembly-CSharp::TankButtonInteractable
+  buttonType: 1
 --- !u!1 &7558721112563450275
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,6 +855,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0

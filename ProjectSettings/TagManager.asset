@@ -9,6 +9,7 @@ TagManager:
   - dirt
   - mud
   - water
+  - Tank
   layers:
   - Default
   - TransparentFX

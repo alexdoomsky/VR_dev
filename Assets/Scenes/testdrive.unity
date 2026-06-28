@@ -48151,7 +48151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3176532662248547136, guid: cbcb7de480acf6d1cbf4274be9dca390, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8343611786077416768, guid: cbcb7de480acf6d1cbf4274be9dca390, type: 3}
       propertyPath: m_LocalPosition.x
@@ -57195,7 +57195,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1601371082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c747ec1294f922a3e823360b3bcbdfb0, type: 3}
   m_Name: 
@@ -66676,7 +66676,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3176532662248547136, guid: c1c3cb995ecd915ad99eeaa284544216, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8343611786077416768, guid: c1c3cb995ecd915ad99eeaa284544216, type: 3}
       propertyPath: m_LocalPosition.x
@@ -73136,6 +73136,10 @@ PrefabInstance:
     - target: {fileID: 3176532662248547136, guid: 89dfa7529abfa6c04bbb3c7bbbd8e030, type: 3}
       propertyPath: m_Name
       value: calibration Ui - seat
+      objectReference: {fileID: 0}
+    - target: {fileID: 3176532662248547136, guid: 89dfa7529abfa6c04bbb3c7bbbd8e030, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8343611786077416768, guid: 89dfa7529abfa6c04bbb3c7bbbd8e030, type: 3}
       propertyPath: m_LocalPosition.x

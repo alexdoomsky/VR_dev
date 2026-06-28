@@ -170,9 +170,6 @@ public class TankTelemetry : MonoBehaviour
     // можно ли запустить двигатель (условное состояние)
     public bool CanStartEngine;
 
-    // находится ли водитель в танке
-    public bool DriverPresent;
-
     // движется ли танк (обобщённый флаг)
     public bool IsMoving;
 

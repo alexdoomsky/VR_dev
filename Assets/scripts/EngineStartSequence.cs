@@ -1,116 +1,96 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Проверяет правильную последовательность запуска двигателя
-//DEPRECATED
+/// <summary>
+/// Проверяет правильную последовательность запуска двигателя.
+/// После успешного прохождения разрешает запуск двигателя.
+/// </summary>
 public class EngineStartSequence : MonoBehaviour
 {
-    [SerializeField]
+    [Header("References")]
+    [SerializeField] private TankTelemetry telemetry;
 
-    // Ссылка на общую телеметрию танка
-    private TankTelemetry telemetry;
-
-    // readonly означает что ссылка на объект не может быть изменена после создания
-    //
-    // List<string> - список строк
-    //
-    // new() создаёт новый объект списка
-    private readonly List<string> correctSequence = new()
+    // Правильная последовательность кнопок
+    private readonly List<TankButton> correctSequence = new()
     {
-        "FuelButton",
-        "AirButton",
-        "IgnitionButton"
+        TankButton.Fuel,
+        TankButton.Air,
+        TankButton.Ignition
     };
 
-    // Индекс текущего ожидаемого шага запуска
+    // Индекс ожидаемой кнопки
     private int currentIndex;
 
-    // Свойство только для чтения (нет set)
-    //
-    // => это сокращённая запись return
-    //
-    // Возвращает true если последовательность завершена
     public bool SequenceCompleted =>
     telemetry != null &&
     telemetry.CanStartEngine;
 
-    // Регистрирует нажатие кнопки запуска
-    public void RegisterButtonPress(string buttonName)
+    private void OnEnable()
     {
-        // Проверка что телеметрия назначена
+        TankEventBus.OnButtonPressed += OnButtonPressed;
+    }
+
+    private void OnDisable()
+    {
+        TankEventBus.OnButtonPressed -= OnButtonPressed;
+    }
+
+    private void OnButtonPressed(TankButton button)
+    {
         if (telemetry == null)
-        {
-            // Вывод ошибки в Console Unity
-            Debug.LogError("TankTelemetry not assigned");
-
             return;
-        }
 
-        // Вывод сообщения в Console Unity
-        //
-        // $ позволяет использовать интерполяцию строк
-        Debug.Log($"Pressed: {buttonName}");
+        // После прохождения последовательности больше не реагируем
+        // (стартер обрабатывается TankEngine)
+        if (telemetry.CanStartEngine)
+            return;
 
-        // Проверяем соответствует ли нажатая кнопка ожидаемой
-        //
-        // currentIndex указывает какой шаг сейчас должен быть выполнен
-        if (buttonName != correctSequence[currentIndex])
+        Debug.Log($"Pressed: {button}");
+
+        if (button != correctSequence[currentIndex])
         {
-            Debug.Log("WRONG ORDER");
+            Debug.Log("Wrong engine start sequence.");
 
-            // Сброс последовательности при ошибке
             ResetSequence();
-
             return;
         }
 
-        // switch выбирает действие по значению строки
-        switch (buttonName)
+        switch (button)
         {
-            case "FuelButton":
-
-                // Разрешаем подачу топлива
+            case TankButton.Fuel:
                 telemetry.FuelEnabled = true;
                 break;
 
-            case "AirButton":
-
-                // Разрешаем подачу воздуха
+            case TankButton.Air:
                 telemetry.AirEnabled = true;
                 break;
 
-            case "IgnitionButton":
-
-                // Включаем зажигание
+            case TankButton.Ignition:
                 telemetry.IgnitionEnabled = true;
                 break;
         }
 
-        // Переходим к следующему шагу последовательности
         currentIndex++;
 
-        // Count возвращает количество элементов списка
         if (currentIndex >= correctSequence.Count)
         {
-            // Разрешаем запуск двигателя
             telemetry.CanStartEngine = true;
 
-            Debug.Log("START SEQUENCE COMPLETED");
+            Debug.Log("Engine start sequence completed.");
         }
     }
 
-    // Сбрасывает последовательность запуска в начальное состояние
-    private void ResetSequence()
+    /// <summary>
+    /// Сбрасывает последовательность запуска.
+    /// </summary>
+    public void ResetSequence()
     {
-        // Возвращаемся к первому шагу
         currentIndex = 0;
 
-        // Отключаем все системы запуска
         telemetry.FuelEnabled = false;
         telemetry.AirEnabled = false;
         telemetry.IgnitionEnabled = false;
 
-        // Запуск двигателя снова запрещён
         telemetry.CanStartEngine = false;
     }
 }

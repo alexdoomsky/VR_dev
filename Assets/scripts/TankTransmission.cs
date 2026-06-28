@@ -86,10 +86,11 @@ public class TankTransmission : MonoBehaviour
         {
             if (unsafeShift || shiftUnderLoad || clutchDrop)
             {
-                telemetry.EngineRunning = false;
+                telemetry.EngineState = EngineState.Off;
                 telemetry.TargetSpeedKmh = 0f;
                 telemetry.GearLoad = 0f;
                 return;
+                TankEventBus.RaiseEngineStalled();
             }
         }
 

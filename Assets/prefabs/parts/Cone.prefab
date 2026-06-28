@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6220807918820706453}
   - component: {fileID: 1479686541001858568}
   - component: {fileID: 5516386394832578390}
+  - component: {fileID: 8550659352508291727}
   m_Layer: 7
   m_Name: Cone
   m_TagString: Untagged
@@ -109,12 +110,27 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8550659352508291727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8911767197025671312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0c237ec324710d3a8f20a7149d41a1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleBehaviour
+  reaction: 1
+  counter: {fileID: 0}
+  visualRoot: {fileID: 7360610156697652648}
 --- !u!1001 &9170001791393544331
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201,7 +217,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30

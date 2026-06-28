@@ -784,7 +784,6 @@ GameObject:
   - component: {fileID: 1742286763988377904}
   - component: {fileID: 5400106403384116068}
   - component: {fileID: 4619945153276830819}
-  - component: {fileID: 3783604823270582001}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -859,20 +858,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8170108703858832606}
   m_CullTransparentMesh: 1
---- !u!114 &3783604823270582001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8170108703858832606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 098b7257460768a40a490706b9cd99db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NotepadLogScroll
-  _logTextPrefab: {fileID: 4028974291311149777, guid: 1b8dd1a0aa82b6145b4703a74f42cfbc, type: 3}
-  _logContentTransform: {fileID: 8611881966464121168}
 --- !u!1 &8260365999085855965
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,30 +967,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421383df3fa55a1748e6d1ed290f89c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankDebugOverlay
+  telemetry: {fileID: 0}
+  output: {fileID: 8935741335264144768}
   leftTrigger: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   rightTrigger: {fileID: 7904272356298805229, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  output: {fileID: 8935741335264144768}
   updateInterval: 0.1
   goodFpsThreshold: 72
   badFpsThreshold: 50
-  EngineRPM: 0
-  EngineTorque: 0
-  EngineRunning: 0
-  EngineStalled: 0
-  CurrentGear: 0
-  ThrottleInput: 0
-  ClutchInput: 0
-  LeftBrake: 0
-  RightBrake: 0
-  SpeedKmh: 0
-  LeftTrackForce: 0
-  RightTrackForce: 0
-  LeftTrackSlip: 0
-  RightTrackSlip: 0
-  CurrentSurface: Unknown
-  FuelLevel: 0
-  EngineTemperature: 0
-  OilPressure: 0
 --- !u!1 &8353782746588433291
 GameObject:
   m_ObjectHideFlags: 0

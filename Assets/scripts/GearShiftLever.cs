@@ -91,6 +91,7 @@ public class GearShiftDetector : MonoBehaviour
                 //
                 // Invoke() вызывает событие
                 OnGearChanged?.Invoke(currentGear);
+                TankEventBus.RaiseGearChanged(currentGear);
             }
         }
     }

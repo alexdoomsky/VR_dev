@@ -78,11 +78,38 @@ public class TankEngine : MonoBehaviour
     // true если двигатель заглох
     public bool IsDead =>
     telemetry.EngineState == EngineState.Stalled;
+    private void OnEnable()
+    {
+        TankEventBus.OnButtonPressed += OnButtonPressed;
+    }
 
+    private void OnDisable()
+    {
+        TankEventBus.OnButtonPressed -= OnButtonPressed;
+    }
+
+    private void OnButtonPressed(TankButton button)
+    {
+        if (button != TankButton.Starter)
+            return;
+
+        if (telemetry == null)
+            return;
+
+        // Пока последовательность запуска не выполнена,
+        // стартер ничего не делает.
+        if (!telemetry.CanStartEngine)
+            return;
+
+        StartEngine();
+    }
     // Запускает двигатель
     public void StartEngine()
     {
-        // Не даём запустить уже работающий двигатель
+        if (telemetry == null)
+            return;
+
+        // Уже работает или запускается
         if (telemetry.EngineState == EngineState.Running ||
             telemetry.EngineState == EngineState.Starting)
             return;
@@ -93,6 +120,9 @@ public class TankEngine : MonoBehaviour
         telemetry.EngineStalled = false;
 
         telemetry.EngineRPM = 0f;
+        telemetry.EngineTorque = 0f;
+
+        TankEventBus.RaiseEngineStarted();
     }
 
     // Полностью выключает двигатель
@@ -225,7 +255,9 @@ public class TankEngine : MonoBehaviour
         if (telemetry.EngineRPM <= 0f)
         {
             telemetry.EngineRPM = 0f;
+
             telemetry.EngineState = EngineState.Off;
+            telemetry.EngineRunning = false;
         }
 
         telemetry.EngineTorque = 0f;
@@ -267,6 +299,7 @@ public class TankEngine : MonoBehaviour
 
             telemetry.EngineStalled = true;
             telemetry.EngineRunning = false;
+            TankEventBus.RaiseEngineStalled();
         }
     }
 
@@ -321,11 +354,12 @@ public class TankEngine : MonoBehaviour
         if (temp > criticalThreshold ||
             telemetry.WaterLevel <= 0f)
         {
-            telemetry.EngineState =
-            EngineState.Stalled;
+            telemetry.EngineState = EngineState.Stalled;
 
             telemetry.EngineStalled = true;
             telemetry.EngineRunning = false;
+
+            TankEventBus.RaiseEngineStalled();
         }
     }
 }
