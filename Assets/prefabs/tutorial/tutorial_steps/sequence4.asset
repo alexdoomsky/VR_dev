@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: starterbutton
   developerDescription: press starter button
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 0193c009bac5f4fa6ab86ec58908f1be, type: 3}
   successEvent: 1
   successButton: 4
   successIntParameter: 0

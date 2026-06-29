@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 095259f3a328b13638ca698cc23e26f7, type: 3}
-  m_Name: sequence1
+  m_Name: sequence
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: fuelbutton
   developerDescription: press fuel button
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 3889946f2fb60d22f902de6a690bdf90, type: 3}
   successEvent: 1
   successButton: 1
   successIntParameter: 0

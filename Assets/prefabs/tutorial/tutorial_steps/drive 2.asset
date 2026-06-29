@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: turn
   developerDescription: turn 90 degress any side and drive forward a little
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: a973c2ba3b513fc63a1b84deb990cfeb, type: 3}
   successEvent: 8
   successButton: 0
   successIntParameter: 0

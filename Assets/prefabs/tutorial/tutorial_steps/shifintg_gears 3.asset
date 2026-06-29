@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: release_clutch
   developerDescription: slowly realease clutch
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 5d72d3058a3c095289afc4b696f4623b, type: 3}
   successEvent: 8
   successButton: 0
   successIntParameter: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: press_clutch
   developerDescription: press and hold clutch
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 956023e4ecc44c291be077667a6d4735, type: 3}
   successEvent: 6
   successButton: 0
   successIntParameter: 0

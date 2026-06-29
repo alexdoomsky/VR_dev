@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: ignitionbutton
   developerDescription: press ignition button
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 3ded61bd64b91e0edb9d0cd6cd396f54, type: 3}
   successEvent: 1
   successButton: 3
   successIntParameter: 0

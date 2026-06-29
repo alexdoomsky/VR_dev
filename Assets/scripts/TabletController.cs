@@ -26,12 +26,21 @@ public class TabletController : MonoBehaviour
     /// </summary>
     public GameObject ShowPage(GameObject prefab)
     {
+        Debug.Log($"ShowPage: {prefab?.name}");
+
         ClearPage();
 
         if (prefab == null)
             return null;
 
-        currentPage = Instantiate(prefab, pageRoot);
+        currentPage = Instantiate(prefab, pageRoot, false);
+
+        RectTransform rt = currentPage.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = Vector2.zero;
+        rt.localScale = Vector3.one;
 
         return currentPage;
     }

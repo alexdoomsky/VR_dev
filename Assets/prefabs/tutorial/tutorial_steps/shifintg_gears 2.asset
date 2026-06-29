@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: change_gear
   developerDescription: change to 1st gear while holding clutch
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: 7cc7ccab1322dba57b1f11c925308c76, type: 3}
   successEvent: 5
   successButton: 0
   successIntParameter: 1

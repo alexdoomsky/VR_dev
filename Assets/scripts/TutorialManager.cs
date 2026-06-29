@@ -78,6 +78,8 @@ public class TutorialManager : MonoBehaviour
 
     private void FinishTutorial()
     {
+        Debug.Log("Tutorial finished");
+
         TutorialCompleted = true;
 
         tablet.ClearPage();
@@ -117,7 +119,10 @@ public class TutorialManager : MonoBehaviour
 
         tablet.ClearPage();
 
-        if (step != null && step.pagePrefab != null)
+        if (step == null)
+            return;
+
+        if (step.pagePrefab != null)
             tablet.ShowPage(step.pagePrefab);
     }
 
@@ -145,20 +150,37 @@ public class TutorialManager : MonoBehaviour
 
     public void NotifyCheckpoint(TutorialCheckpoint checkpoint)
     {
+        Debug.Log($"NotifyCheckpoint: {checkpoint.name}");
+
         if (CurrentStep == null)
+        {
+            Debug.Log("CurrentStep == null");
             return;
+        }
+
+        Debug.Log($"Current step: {CurrentStep.stepName}");
 
         foreach (var binding in checkpointBindings)
         {
+            if (binding == null)
+                continue;
+
+            Debug.Log(
+                $"Compare step={binding.step?.stepName}, checkpoint={binding.checkpoint?.name}");
+
             if (binding.step != CurrentStep)
                 continue;
 
             if (binding.checkpoint != checkpoint)
                 continue;
 
+            Debug.Log("Checkpoint matched");
+
             CompleteCurrentStep();
             return;
         }
+
+        Debug.Log("No binding found");
     }
 
     //=========================================================

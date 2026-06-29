@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: airbutton
   developerDescription: press air button
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: fca38cd49cab7e7e9884aca2d65681b7, type: 3}
   successEvent: 1
   successButton: 2
   successIntParameter: 0

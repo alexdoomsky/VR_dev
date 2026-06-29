@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialStep
   stepName: drive_back
   developerDescription: drive backwards a little
-  pagePrefab: {fileID: 0}
+  pagePrefab: {fileID: 2244053754569692655, guid: fe7c99576c4b5f3f793a9d5da42677cd, type: 3}
   successEvent: 8
   successButton: 0
   successIntParameter: 0
