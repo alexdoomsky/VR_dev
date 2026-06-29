@@ -83,6 +83,7 @@ public class TutorialManager : MonoBehaviour
         TutorialCompleted = true;
 
         tablet.ClearPage();
+        tablet.ShowExerciseList();
 
         enabled = false;
     }

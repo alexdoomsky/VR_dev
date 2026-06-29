@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1479686541001858568}
   - component: {fileID: 5516386394832578390}
   - component: {fileID: 8550659352508291727}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1829666492479550755, guid: ec716f53fb7207045b47358a5fbdb1a2, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

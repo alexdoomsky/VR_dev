@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class ExerciseZone : MonoBehaviour
+public class ExerciseGate : MonoBehaviour
 {
     [SerializeField] private string requiredTag = "Tank";
 
@@ -17,7 +17,7 @@ public class ExerciseZone : MonoBehaviour
         GetComponent<Collider>().isTrigger = true;
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(requiredTag))
             return;
@@ -25,10 +25,6 @@ public class ExerciseZone : MonoBehaviour
         if (manager == null)
             return;
 
-        manager.NotifyZoneExit(this);
-        Debug.Log($"Exit: {other.name} tag={other.tag}");
-        Debug.Log($"manager null? {manager == null}");
-        Debug.Log("EXIT TRIGGER FIRED");
-        Debug.Log(other.gameObject.name + " " + other.tag);
+        manager.NotifyGate(this);
     }
 }

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36f7ac8f0846b4f9a66122d64da65df, type: 3}
+  m_Name: Exercise_snake
+  m_EditorClassIdentifier: Assembly-CSharp::ExerciseData
+  exerciseName: snake
+  description: move bettwen cones withou touching them
+  exercisePagePrefab: {fileID: 2244053754569692655, guid: 3ec716a36e2e8978dbf87f5af47326a3, type: 3}
+  obstacles: []
+  grades:
+  - gradeName: 0
+    maxHits: 0
+    resultPagePrefab: {fileID: 2244053754569692655, guid: bb191abf24ea7187db7166c93858dd23, type: 3}
+  - gradeName: 1-3
+    maxHits: 3
+    resultPagePrefab: {fileID: 2244053754569692655, guid: 13f6006571d06865396f0dc351b5b995, type: 3}
+  - gradeName: 4-7
+    maxHits: 7
+    resultPagePrefab: {fileID: 2244053754569692655, guid: 92ef6cb8233617311b74442d645dba6e, type: 3}
+  - gradeName: 8+
+    maxHits: 99999
+    resultPagePrefab: {fileID: 2244053754569692655, guid: 1918353fc61377e708e0b771a3b8d6ce, type: 3}

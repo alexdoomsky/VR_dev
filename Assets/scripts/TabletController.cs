@@ -53,7 +53,7 @@ public class TabletController : MonoBehaviour
         if (data == null)
             return;
 
-        ShowPage(data.ExercisePagePrefab);
+        ShowPage(data.exercisePagePrefab);
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class TabletController : MonoBehaviour
             return;
 
         GameObject resultPrefab =
-        exercise.Data.GetResultPrefab(exercise.GetHitCount());
+        exercise.Data.GetResultPrefab(exercise.HitCount);
 
         ShowPage(resultPrefab);
     }

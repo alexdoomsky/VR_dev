@@ -9,7 +9,7 @@ public class HatchController : MonoBehaviour
     [Header("XR")]
 
     // XR Grab Interactable позволяет хватать объект в VR
-    [SerializeField] private XRGrabInteractable _grabInteractable;
+    [SerializeField] private SingleAxisLeverInteractable SingleAxisLeverInteractable;
 
     [Header("Angles")]
 
@@ -43,31 +43,31 @@ public class HatchController : MonoBehaviour
     // Вызывается при включении объекта
     private void OnEnable()
     {
-        if (_grabInteractable != null)
+        if (SingleAxisLeverInteractable != null)
         {
             // selectEntered
             // Событие начала захвата объекта
 
             // AddListener()
             // Подписывает метод на событие
-            _grabInteractable.selectEntered.AddListener(OnGrab);
+            SingleAxisLeverInteractable.selectEntered.AddListener(OnGrab);
 
             // selectExited
             // Событие отпускания объекта
-            _grabInteractable.selectExited.AddListener(OnRelease);
+            SingleAxisLeverInteractable.selectExited.AddListener(OnRelease);
         }
     }
 
     // Вызывается при выключении объекта
     private void OnDisable()
     {
-        if (_grabInteractable != null)
+        if (SingleAxisLeverInteractable != null)
         {
             // RemoveListener()
             // Удаляет подписку на событие
-            _grabInteractable.selectEntered.RemoveListener(OnGrab);
+            SingleAxisLeverInteractable.selectEntered.RemoveListener(OnGrab);
 
-            _grabInteractable.selectExited.RemoveListener(OnRelease);
+            SingleAxisLeverInteractable.selectExited.RemoveListener(OnRelease);
         }
     }
 

@@ -1,97 +1,37 @@
-using UnityEngine;
-
-public class ExerciseInstance : MonoBehaviour
+public class ExerciseInstance
 {
-    [Header("Data")]
-    [SerializeField] private ExerciseData data;
+    public ExerciseData Data { get; private set; }
 
-    [Header("References")]
-    [SerializeField] private ObstacleCounter obstacleCounter;
+    public int HitCount { get; private set; }
 
-    public ExerciseData Data => data;
+    public bool IsFinished { get; private set; }
 
-    private TutorialCheckpoint startGate;
-    private TutorialCheckpoint finishGate;
-
-    private bool started;
-    private bool completed;
-
-    public bool Started => started;
-    public bool Completed => completed;
-
-    /// <summary>
-    /// Вызывается любой из двух ворот.
-    /// </summary>
-    public void OnGateTriggered(TutorialCheckpoint gate)
+    public ExerciseInstance(ExerciseData data)
     {
-        if (completed)
-            return;
-
-        // Первое пересечение любой воротины
-        if (!started)
-        {
-            started = true;
-
-            startGate = gate;
-
-            ExerciseManager.Instance.StartExercise(this);
-
-            return;
-        }
-
-        // Повторный въезд в стартовую воротину
-        if (gate == startGate)
-            return;
-
-        finishGate = gate;
-
-        ExerciseManager.Instance.FinishExercise();
+        Data = data;
+        HitCount = 0;
+        IsFinished = false;
     }
 
-    /// <summary>
-    /// Пользователь покинул область упражнения.
-    /// </summary>
-    public void OnBoundsExited()
+    public void RegisterHit()
     {
-        if (!started)
-            return;
-
-        if (completed)
-            return;
-
-        ExerciseManager.Instance.LeaveExercise();
+        HitCount++;
     }
 
-    /// <summary>
-    /// Вызывается менеджером после успешного завершения.
-    /// </summary>
+    public void Reset()
+    {
+        HitCount = 0;
+        IsFinished = false;
+    }
+
     public void Finish()
     {
-        completed = true;
-
-        Debug.Log($"Exercise \"{data.ExerciseName}\" completed. Hits: {GetHitCount()}");
+        IsFinished = true;
     }
 
-    /// <summary>
-    /// Полный сброс упражнения.
-    /// </summary>
-    public void ResetExercise()
+    public void Finish(int finalHitCount)
     {
-        started = false;
-        completed = false;
-
-        startGate = null;
-        finishGate = null;
-
-        if (obstacleCounter != null)
-            obstacleCounter.ResetCounter();
-    }
-
-    public int GetHitCount()
-    {
-        if (obstacleCounter == null)
-            return 0;
-
-        return obstacleCounter.HitCount;
+        HitCount = finalHitCount;
+        IsFinished = true;
     }
 }

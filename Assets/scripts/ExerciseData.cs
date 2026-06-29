@@ -1,39 +1,39 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-[CreateAssetMenu(
-    fileName = "ExerciseData",
-    menuName = "Tank Trainer/Exercise")]
-    public class ExerciseData : ScriptableObject
+[CreateAssetMenu(fileName = "Exercise", menuName = "Tank Trainer/Exercise")]
+public class ExerciseData : ScriptableObject
+{
+    [Header("General")]
+    public string exerciseName;
+
+    [TextArea(3, 8)]
+    public string description;
+
+    [Header("UI")]
+    public GameObject exercisePagePrefab;
+
+    [Header("Obstacles")]
+    public ObstacleBehaviour[] obstacles;
+
+    [Header("Grades")]
+    public ExerciseGrade[] grades;
+
+    /// <summary>
+    /// Подбирает префаб результата в зависимости от количества хитов.
+    /// Грейды должны быть отсортированы по возрастанию maxHits в инспекторе.
+    /// </summary>
+    public GameObject GetResultPrefab(int hitCount)
     {
-        [Header("Information")]
-        public string ExerciseName;
-
-        [TextArea(3,8)]
-        public string Description;
-
-        [Header("Tablet")]
-
-        [Tooltip("Страница с описанием упражнения")]
-        public GameObject ExercisePagePrefab;
-
-        [Tooltip("Страница со списком упражнений после выхода")]
-        public GameObject ExerciseListPrefab;
-
-        [Header("Results")]
-        public List<ExerciseResult> Results = new();
-
-        /// <summary>
-        /// Возвращает нужный префаб результата.
-        /// </summary>
-        public GameObject GetResultPrefab(int hitCount)
-        {
-            foreach (ExerciseResult result in Results)
-            {
-                if (hitCount <= result.maxHits)
-                    return result.resultPagePrefab;
-            }
-
+        if (grades == null || grades.Length == 0)
             return null;
+
+        foreach (ExerciseGrade grade in grades)
+        {
+            if (hitCount <= grade.maxHits)
+                return grade.resultPagePrefab;
         }
+
+        return grades[grades.Length - 1].resultPagePrefab;
     }
+}
