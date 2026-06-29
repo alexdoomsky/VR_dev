@@ -10,8 +10,6 @@ public class TutorialManager : MonoBehaviour
     [Header("Checkpoint bindings")]
     [SerializeField] private TutorialCheckpointBinding[] checkpointBindings;
 
-    [Header("Settings")]
-    [SerializeField] private bool startAutomatically = true;
 
     public bool TutorialCompleted { get; private set; }
 
@@ -30,12 +28,13 @@ public class TutorialManager : MonoBehaviour
             if (binding != null && binding.checkpoint != null)
                 binding.checkpoint.Initialize(this);
         }
+
+        enabled = false;
     }
 
     private void Start()
     {
-        if (startAutomatically)
-            StartTutorial();
+
     }
 
     private void OnEnable()
@@ -68,9 +67,20 @@ public class TutorialManager : MonoBehaviour
     {
         TutorialCompleted = false;
         currentStepIndex = 0;
+
+        enabled = true;
+
         ShowCurrentStep();
     }
+    public void UI_StartTutorial()
+    {
+        StartTutorial();
+    }
 
+    public void UI_SkipTutorial()
+    {
+        SkipTutorial();
+    }
     public void SkipTutorial()
     {
         FinishTutorial();

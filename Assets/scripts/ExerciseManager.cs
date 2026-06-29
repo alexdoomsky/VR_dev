@@ -41,7 +41,14 @@ public class ExerciseManager : MonoBehaviour
                 binding.zone.Initialize(this);
         }
     }
+    public void NotifyTutorialSkipped()
+    {
+        Debug.Log("Tutorial skipped -> enabling exercise flow");
 
+        tablet.ShowExerciseList();
+
+        ClearCurrentExercise();
+    }
     public void NotifyGate(ExerciseGate gate)
     {
         if (gate == null)
