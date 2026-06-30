@@ -2550,7 +2550,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1108979187}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c189b8603b83142da27153b6ff8db37, type: 3}
   m_Name: 
@@ -2625,6 +2625,114 @@ MonoBehaviour:
   minAngle: -60
   maxAngle: 0
   invert: 0
+--- !u!114 &1108979196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108979187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb9907e6c78eaffb79a4932ad2788441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Vehicles.Tank.HatchInteractable
+  m_InteractionManager: {fileID: 2104275238}
+  m_Colliders:
+  - {fileID: 1950908013}
+  - {fileID: 1231454578}
+  m_InteractionLayers:
+    m_Bits: 2
+  m_DistanceCalculationMode: 1
+  m_SelectMode: 0
+  m_FocusMode: 1
+  m_CustomReticle: {fileID: 0}
+  m_AllowGazeInteraction: 0
+  m_AllowGazeSelect: 0
+  m_OverrideGazeTimeToSelect: 0
+  m_GazeTimeToSelect: 0.5
+  m_OverrideTimeToAutoDeselectGaze: 0
+  m_TimeToAutoDeselectGaze: 3
+  m_AllowGazeAssistance: 0
+  m_FirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstFocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastFocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
+  m_StartingInteractionStrengthFilters: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
+  handle: {fileID: 1108979188}
+  hinge: {fileID: 1108979188}
+  rotationAxis: {x: 0, y: 0, z: 1}
+  trackingTransform: {fileID: 1229837485}
+  degreesPerMeter: 250
+  minAngle: -60
+  maxAngle: 0
+  sensitivityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  speedNormalizationReference: 1.5
 --- !u!43 &1126590488
 Mesh:
   m_ObjectHideFlags: 0
@@ -5193,6 +5301,110 @@ MonoBehaviour:
   degreesPerMeter: 700
   invertSide: 1
   invertForward: 0
+--- !u!114 &1902424852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902424850}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d6033c62a5b85d70a045894b44515de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Vehicles.Tank.GearShiftInteractable
+  m_InteractionManager: {fileID: 2104275238}
+  m_Colliders:
+  - {fileID: 1902424849}
+  m_InteractionLayers:
+    m_Bits: 2
+  m_DistanceCalculationMode: 1
+  m_SelectMode: 0
+  m_FocusMode: 1
+  m_CustomReticle: {fileID: 0}
+  m_AllowGazeInteraction: 0
+  m_AllowGazeSelect: 0
+  m_OverrideGazeTimeToSelect: 0
+  m_GazeTimeToSelect: 0.5
+  m_OverrideTimeToAutoDeselectGaze: 0
+  m_TimeToAutoDeselectGaze: 3
+  m_AllowGazeAssistance: 0
+  m_FirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstFocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastFocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
+  m_StartingInteractionStrengthFilters: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
+  handle: {fileID: 1902424848}
+  trackingTransform: {fileID: 708864472}
+  degreesPerMeter: 900
+  maxForwardAngle: 15
+  maxSideAngle: 10
+  neutralWindow: 0.15
+  gateSpacing: 1
+  gateSwitchThreshold: 0.6
+  forwardDeadZone: 0.005
+  sideDeadZone: 0.005
+  gateGearMappings:
+  - gate: 0
+    topGear: 2
+    bottomGear: 3
+    hasNeutralAtCenter: 0
+    centerGear: 1
+    bottomRequiresGateRelease: 0
+  - gate: 1
+    topGear: 4
+    bottomGear: 5
+    hasNeutralAtCenter: 1
+    centerGear: 1
+    bottomRequiresGateRelease: 0
+  - gate: 2
+    topGear: 6
+    bottomGear: 0
+    hasNeutralAtCenter: 0
+    centerGear: 1
+    bottomRequiresGateRelease: 0
 --- !u!43 &1924091831
 Mesh:
   m_ObjectHideFlags: 0
@@ -6738,9 +6950,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6576554989036544906, guid: 99b74253897bf0ff0843d44d46e8b3e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1108979193}
+    - targetCorrespondingSourceObject: {fileID: 6576554989036544906, guid: 99b74253897bf0ff0843d44d46e8b3e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1108979196}
     - targetCorrespondingSourceObject: {fileID: 7267409182476006415, guid: 99b74253897bf0ff0843d44d46e8b3e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1902424851}
+    - targetCorrespondingSourceObject: {fileID: 7267409182476006415, guid: 99b74253897bf0ff0843d44d46e8b3e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1902424852}
     - targetCorrespondingSourceObject: {fileID: 7581146663891788604, guid: 99b74253897bf0ff0843d44d46e8b3e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2104275242}
