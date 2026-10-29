@@ -10,8 +10,7 @@ public class LobbyScreen : MonoBehaviour
     [Header("Слоты игроков")]
     [SerializeField] PlayerSlotUI slotA;           // ты
     [SerializeField] PlayerSlotUI slotB;           // партнёр
-    [SerializeField] private RawImage slotAAvatarImage;
-    [SerializeField] private RawImage slotBAvatarImage;
+
     [Header("Список друзей")]
     [SerializeField] Transform friendListRoot;
     [SerializeField] FriendRowUI friendRowPrefab;
@@ -267,9 +266,7 @@ public class LobbyScreen : MonoBehaviour
     $"[LobbyUI] Members={members.Count}, " +
     $"SlotA SteamID={idA.m_SteamID}, " +
     $"Local SteamID={SteamUser.GetSteamID().m_SteamID}");
-        CSteamID slotAId = lobby.Members[0];
-
-        LoadSteamAvatar(slotAId, slotAAvatarImage);
+     
 
         bool partner = members.Count >= 2;
         btnStart.gameObject.SetActive(lobby.IsHost && lobby.AllReady());

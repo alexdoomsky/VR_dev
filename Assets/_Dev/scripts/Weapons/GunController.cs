@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using UnityEngine;
 
@@ -67,9 +68,10 @@ public class GunController : MonoBehaviour, IGun
 
         var s = shells[loadedShell];
         Vector3 pos = muzzle.position + muzzle.forward * spawnOffset;
-        Instantiate(s.prefab, pos, muzzle.rotation).Launch(s.speed, s.damage, ownColliders);
-
-        PlayMuzzleEffects();
+        var proj = Instantiate(s.prefab, pos, muzzle.rotation);
+        proj.Launch(s.speed, s.damage, ownColliders);
+        if (NetworkServer.active) NetworkServer.Spawn(proj.gameObject);   // using Mirror;
+        PlayFireVisuals();
 
         Fired?.Invoke(loadedShell);
         State = GunState.Empty;
@@ -79,6 +81,7 @@ public class GunController : MonoBehaviour, IGun
         return true;
     }
 
+    public void PlayFireVisuals() { PlayMuzzleEffects(); recoilT = 0f; }
     void PlayMuzzleEffects()
     {
         if (muzzleEffects == null) return;

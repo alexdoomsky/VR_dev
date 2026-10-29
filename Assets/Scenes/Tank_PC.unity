@@ -11556,6 +11556,8 @@ GameObject:
   - component: {fileID: 8503322664024777193}
   - component: {fileID: 8503322664024777194}
   - component: {fileID: 8503322664024777195}
+  - component: {fileID: 8503322664024777197}
+  - component: {fileID: 8503322664024777196}
   m_Layer: 6
   m_Name: tank
   m_TagString: Tank
@@ -17533,6 +17535,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88be3c17fee591e4babed8ad4ad7a6ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponInput
+--- !u!114 &8503322664024777196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192671163318820379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815e5a86c3dbd39429cc57db35bb58ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurretPublisher
+  turret: {fileID: 8503322664024777191}
+  gun: {fileID: 8503322664024777192}
+--- !u!114 &8503322664024777197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192671163318820379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6444fac40203ee840a5e924e2879cb1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HullFollower
+  hullBody: {fileID: 8174601453102980959}
 --- !u!4 &8532448141631442560
 Transform:
   m_ObjectHideFlags: 0
