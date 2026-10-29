@@ -104,8 +104,9 @@ public class Projectile : MonoBehaviour
         Vector3 point = cp.point + cp.normal * effectOffset;
         Quaternion rot = Quaternion.LookRotation(cp.normal);
 
-        SpawnEffect(hotMetalEffect, point, rot, hotMetalLifetime);
-        SpawnEffect(smokeEffect, point, rot, smokeLifetime);
+        PlayHit(point, rot);
+        var net = GetComponent<ProjectileNet>();
+        if (net) net.RpcHit(point, rot);
 
         int n = Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, hits);
         for (int i = 0; i < n; i++)
@@ -118,7 +119,11 @@ public class Projectile : MonoBehaviour
 
         if (destroyOnHit) Destroy(gameObject);
     }
-
+    public void PlayHit(Vector3 point, Quaternion rot)
+    {
+        SpawnEffect(hotMetalEffect, point, rot, hotMetalLifetime);
+        SpawnEffect(smokeEffect, point, rot, smokeLifetime);
+    }
     static void SpawnEffect(GameObject prefab, Vector3 pos, Quaternion rot, float life)
     {
         if (!prefab) return;

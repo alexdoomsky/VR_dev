@@ -1,11 +1,12 @@
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Steamworks;
 
 public class SteamLobbyService : MonoBehaviour
 {
     public static SteamLobbyService I { get; private set; }
+    const string KEY_HOST = "mirrorhost", KEY_HOSTUP = "hostup";
 
     // ?? Состояние ??????????????????????????????????????????????
     public CSteamID LobbyId { get; private set; }
@@ -45,6 +46,12 @@ public class SteamLobbyService : MonoBehaviour
         cbChat = Callback<LobbyChatMsg_t>.Create(OnChatMessage);
         cbGameCreated = Callback<LobbyGameCreated_t>.Create(OnGameCreated);
     }
+
+    public void SetHostUp() =>
+    SteamMatchmaking.SetLobbyMemberData(LobbyId, KEY_HOSTUP, "1");
+    public bool IsHostUp(ulong hostId) =>
+        SteamMatchmaking.GetLobbyMemberData(LobbyId, new CSteamID(hostId), KEY_HOSTUP) == "1";
+
     public void InviteFriend(CSteamID friendId)
     {
         if (!InLobby)
@@ -102,6 +109,7 @@ public class SteamLobbyService : MonoBehaviour
         var me = SteamUser.GetSteamID();
         SteamMatchmaking.SetLobbyMemberData(LobbyId, KEY_PLATFORM, platform);
         SteamMatchmaking.SetLobbyMemberData(LobbyId, KEY_READY, ready ? "1" : "0");
+        SteamMatchmaking.SetLobbyMemberData(LobbyId, "platform",GameSettings.Mode == ControlMode.VR ? "VR" : "PC");
     }
 
     // ?? Отправить сообщение в чат лобби ???????????????????????
@@ -137,8 +145,13 @@ public class SteamLobbyService : MonoBehaviour
     public bool AllReady()
     {
         if (Members.Count < 2) return false;
+        var owner = SteamMatchmaking.GetLobbyOwner(LobbyId);
         foreach (var m in Members)
+        {
             if (!GetMemberReady(m)) return false;
+            string p = GetMemberPlatform(m);
+            if (m == owner ? p != "PC" : p != "VR") return false;   // хост = ПК, гость = VR
+        }
         return true;
     }
 
@@ -245,7 +258,9 @@ public class SteamLobbyService : MonoBehaviour
 
     void OnGameCreated(LobbyGameCreated_t p)
     {
-        OnGameStart?.Invoke(p.m_ulSteamIDGameServer);
+        string s = SteamMatchmaking.GetLobbyData(LobbyId, KEY_HOST);
+        ulong host = ulong.TryParse(s, out var h) ? h : p.m_ulSteamIDGameServer;
+        OnGameStart?.Invoke(host);
     }
 
     void RefreshMembers()

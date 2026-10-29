@@ -4,7 +4,8 @@ public static class BackToMenu
 {
     public static void Go(string menuScene = "MainMenu")
     {
-        // XR не трогаем: меню само решит, нужен он или нет
-        SceneManager.LoadScene(menuScene);
+        // РЎРµСЃСЃРёСЏ СЃР°РјР° РѕСЃС‚Р°РЅРѕРІРёС‚ Mirror, РІС‹Р№РґРµС‚ РёР· Steam-Р»РѕР±Р±Рё Рё Р·Р°РіСЂСѓР·РёС‚ РјРµРЅСЋ
+        if (SessionService.I) SessionService.I.LeaveSession();
+        else SceneManager.LoadScene(menuScene);
     }
 }
