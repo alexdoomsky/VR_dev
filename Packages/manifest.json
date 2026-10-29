@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.rlabrecque.steamworks.net": "file:C:/Users/legen/OneDrive/Desktop/Steamworks.NET-2025.165.0/com.rlabrecque.steamworks.net",
+    "com.rlabrecque.steamworks.net": "file:/home/doom/Downloads/steamworks/com.rlabrecque.steamworks.net",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.cinemachine": "2.10.6",
     "com.unity.collab-proxy": "2.12.4",

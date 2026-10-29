@@ -21,8 +21,8 @@ public class SessionService : MonoBehaviour
     [SerializeField] string levelScene = "";
 
     [Header("Сеть")]
-    [FormerlySerializedAs("tankPrefab")]
-    [SerializeField] GameObject linkPrefab;   // префаб TankLink (он же в Registered Spawnable Prefabs)
+    [SerializeField] NetworkManager networkManager;   // перетащи сюда в Inspector на NetworkRoot
+    [SerializeField] GameObject linkPrefab;
     [SerializeField] float hostWaitTimeout = 90f;
     [SerializeField] float connectTimeout = 30f;
     [SerializeField] float partnerTimeout = 120f;
@@ -72,13 +72,22 @@ public class SessionService : MonoBehaviour
 
     IEnumerator Run(ulong hostId)
     {
-        var net = NetworkManager.singleton;
-        if (!net) { LeaveSession("NetworkManager не найден: проверь префаб NetworkRoot в Resources"); yield break; }
+        Debug.Log($"[Session] Run: hostId={hostId}, я={SteamUser.GetSteamID().m_SteamID}, isHost={hostId == SteamUser.GetSteamID().m_SteamID}, mode={GameSettings.Mode}");
 
+        var net = networkManager;
+        if (!net) net = GetComponent<NetworkManager>();       // fallback: ищем на том же объекте
+        if (!net) net = FindObjectOfType<NetworkManager>();   // последний шанс
+        Debug.Log($"[Session] NetworkManager: {(net ? net.name : "NULL")}");
+        if (!net) { LeaveSession("NetworkManager не найден: проверь префаб NetworkRoot"); yield break; }
         bool isHost = hostId == SteamUser.GetSteamID().m_SteamID;
+        if (isHost && !linkPrefab) { LeaveSession("Не назначен префаб TankLink"); yield break; }
+
+        // Закомментируй на время теста:
+        // if (isHost && GameSettings.IsVR) { LeaveSession("Хостом должен быть игрок на ПК"); yield break; }
+        // if (!isHost && !GameSettings.IsVR) { LeaveSession("Клиентом должен быть VR-игрок"); yield break; }
+
         if (isHost && !linkPrefab) { LeaveSession("В SessionService не назначен префаб TankLink"); yield break; }
-        if (isHost && GameSettings.IsVR) { LeaveSession("Хостом должен быть игрок на ПК"); yield break; }
-        if (!isHost && !GameSettings.IsVR) { LeaveSession("Клиентом должен быть VR-игрок"); yield break; }
+
 
         // 1. Своя сцена. Single: меню, его камеры и EventSystem уходят, [NetworkRoot] остаётся.
         yield return SceneManager.LoadSceneAsync(GameSettings.IsVR ? vrScene : pcScene);

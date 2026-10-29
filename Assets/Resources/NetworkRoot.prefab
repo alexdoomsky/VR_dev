@@ -139,6 +139,7 @@ MonoBehaviour:
   pcScene: Tank_PC
   menuScene: MainMenu
   levelScene: 
+  networkManager: {fileID: 1101205864953975418}
   linkPrefab: {fileID: 8138125763129272082, guid: e4c7eba00c6a7ef42901a443fe01c213, type: 3}
   hostWaitTimeout: 90
   connectTimeout: 30
