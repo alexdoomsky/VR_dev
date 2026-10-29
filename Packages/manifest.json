@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.rlabrecque.steamworks.net": "file:C:/Users/legen/OneDrive/Desktop/Steamworks.NET-2025.165.0/com.rlabrecque.steamworks.net",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.cinemachine": "2.10.6",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.ext.nunit": "2.0.5",
@@ -9,6 +11,7 @@
     "com.unity.inputsystem": "1.19.0",
     "com.unity.learn.iet-framework": "5.0.3",
     "com.unity.multiplayer.center": "1.0.1",
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.postprocessing": "3.5.4",
     "com.unity.probuilder": "6.0.9",
     "com.unity.render-pipelines.high-definition": "17.4.0",
