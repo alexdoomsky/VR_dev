@@ -76,7 +76,7 @@ public class SessionService : MonoBehaviour
 
         var net = networkManager;
         if (!net) net = GetComponent<NetworkManager>();       // fallback: ищем на том же объекте
-        if (!net) net = FindFirstObjectByType<NetworkManager>();   // последний шанс
+        if (!net) net = FindObjectOfType<NetworkManager>();   // последний шанс
         Debug.Log($"[Session] NetworkManager: {(net ? net.name : "NULL")}");
         if (!net) { LeaveSession("NetworkManager не найден: проверь префаб NetworkRoot"); yield break; }
         bool isHost = hostId == SteamUser.GetSteamID().m_SteamID;
@@ -87,7 +87,7 @@ public class SessionService : MonoBehaviour
         // if (!isHost && !GameSettings.IsVR) { LeaveSession("Клиентом должен быть VR-игрок"); yield break; }
 
         if (isHost && !linkPrefab) { LeaveSession("В SessionService не назначен префаб TankLink"); yield break; }
-        
+
 
         // 1. Своя сцена. Single: меню, его камеры и EventSystem уходят, [NetworkRoot] остаётся.
         yield return SceneManager.LoadSceneAsync(GameSettings.IsVR ? vrScene : pcScene);
