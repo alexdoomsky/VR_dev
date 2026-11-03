@@ -21436,8 +21436,8 @@ MonoBehaviour:
   muzzle: {fileID: 680210695294065075}
   fx: {fileID: 8503322664024777191}
   invertYaw: 0
-  invertPitch: 1
-  smoothTime: 0.06
+  invertPitch: 0
+  smoothTime: 0.01
 --- !u!114 &8503322664024777193
 MonoBehaviour:
   m_ObjectHideFlags: 0

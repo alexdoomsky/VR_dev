@@ -3,8 +3,9 @@
     "com.rlabrecque.steamworks.net": {
       "version": "file:/home/doom/Downloads/steamworks/com.rlabrecque.steamworks.net",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "ea51b029a5dbcb47a99d3c1fac930b811672ed32"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

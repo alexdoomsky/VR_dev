@@ -140,7 +140,7 @@ public class SessionService : MonoBehaviour
         var vr = NetPlayer.All.Find(p => !p.isLocalPlayer);   // владелец = VR-игрок (клиент): он публикует позу корпуса
 
         // Появляемся там, где стоит ПК-танк, чтобы он не «прыгнул» до первого пакета от VR
-        var follower = FindObjectOfType<HullFollower>();
+        var follower = FindFirstObjectByType<HullFollower>();
         Vector3 pos = follower ? follower.transform.position : Vector3.zero;
         Quaternion rot = follower ? follower.transform.rotation : Quaternion.identity;
 
