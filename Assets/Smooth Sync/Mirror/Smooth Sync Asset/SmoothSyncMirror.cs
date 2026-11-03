@@ -1150,7 +1150,7 @@ namespace Smooth
             float actualScaleLerpSpeed = scaleLerpSpeed;
             bool teleportPosition = false;
             bool teleportRotation = false;
-            
+
             // If teleporting, set it up so we'll move instantly.
             if (dontEasePosition)
             {
@@ -1165,7 +1165,7 @@ namespace Smooth
                 dontEaseRotation = false;
             }
             if (dontEaseScale)
-            { 
+            {
                 actualScaleLerpSpeed = 1;
                 dontEaseScale = false;
             }
@@ -1903,7 +1903,7 @@ namespace Smooth
             // Check the rest of the States to see where the teleport State belongs.
             else
             {
-                if (stateCount == stateBuffer.Length && stateBuffer[stateCount-1].ownerTimestamp > teleportState.ownerTimestamp)
+                if (stateCount == stateBuffer.Length && stateBuffer[stateCount - 1].ownerTimestamp > teleportState.ownerTimestamp)
                 {
                     // The oldest state in the buffer is newer than the teleport state
                     // and the buffer is full, so just drop the state, it's super old anyway
@@ -1994,8 +1994,16 @@ namespace Smooth
         {
             if (!NetworkServer.active)
             {
-                NetworkServer.ReplaceHandler<NetworkStateMirror>(HandleSync);
+                // Клиент получает NetworkStateMirror от сервера, поэтому обработчик должен быть на NetworkClient.
+                // (раньше здесь было NetworkServer.ReplaceHandler: у клиента не было обработчика,
+                //  Mirror писал "failed to unpack and invoke message" и разрывал соединение)
+                NetworkClient.ReplaceHandler<NetworkStateMirror>(HandleSyncOnClient);
             }
+        }
+
+        static void HandleSyncOnClient(NetworkStateMirror networkState)
+        {
+            HandleSync(null, networkState);   // на клиенте conn не используется
         }
 
         /// <summary>
