@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEngine;
 
 public static class GameSettings
 {
@@ -25,11 +26,25 @@ public class VrProfile : IControlProfile
 {
     public ControlMode Mode => ControlMode.VR;
     public string SceneName { get; }
-    public VrProfile(string scene) => SceneName = scene;
+
+    readonly bool skip;
+
+    public VrProfile(string scene, bool skipCheck = false)
+    {
+        SceneName = scene;
+        skip = skipCheck;
+    }
 
     public IEnumerator Prepare(Action<bool> done)
     {
-        if (XRManager.IsRunning) { done(true); yield break; }   // уже запущен автостартом
+        if (skip)
+        {
+            Debug.LogWarning("[VrProfile] Проверка VR пропущена (skipVrCheck включён).");
+            done(true);
+            yield break;
+        }
+
+        if (XRManager.IsRunning) { done(true); yield break; }
         yield return XRManager.StartXR(done);
     }
 }

@@ -7,7 +7,7 @@ public class SteamLobbyService : MonoBehaviour
 {
     public static SteamLobbyService I { get; private set; }
     const string KEY_HOST = "mirrorhost", KEY_HOSTUP = "hostup";
-
+    Callback<LobbyDataUpdate_t> cbDataUpdate;
     // ?? Состояние ??????????????????????????????????????????????
     public CSteamID LobbyId { get; private set; }
     public bool InLobby => LobbyId.IsValid() && LobbyId != CSteamID.Nil;
@@ -38,6 +38,7 @@ public class SteamLobbyService : MonoBehaviour
         I = this;
 
         if (!SteamManager.Initialized) return;
+        cbDataUpdate = Callback<LobbyDataUpdate_t>.Create(OnDataUpdate);
 
         cbCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         cbJoinReq = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequested);
@@ -51,7 +52,12 @@ public class SteamLobbyService : MonoBehaviour
     SteamMatchmaking.SetLobbyMemberData(LobbyId, KEY_HOSTUP, "1");
     public bool IsHostUp(ulong hostId) =>
         SteamMatchmaking.GetLobbyMemberData(LobbyId, new CSteamID(hostId), KEY_HOSTUP) == "1";
-
+    void OnDataUpdate(LobbyDataUpdate_t p)
+    {
+        // Срабатывает когда любой участник меняет SetLobbyMemberData
+        if (new CSteamID(p.m_ulSteamIDLobby) != LobbyId) return;
+        OnMembersChanged?.Invoke();
+    }
     public void InviteFriend(CSteamID friendId)
     {
         if (!InLobby)
@@ -145,13 +151,8 @@ public class SteamLobbyService : MonoBehaviour
     public bool AllReady()
     {
         if (Members.Count < 2) return false;
-        var owner = SteamMatchmaking.GetLobbyOwner(LobbyId);
         foreach (var m in Members)
-        {
             if (!GetMemberReady(m)) return false;
-            string p = GetMemberPlatform(m);
-            if (m == owner ? p != "PC" : p != "VR") return false;   // хост = ПК, гость = VR
-        }
         return true;
     }
 
@@ -190,6 +191,7 @@ public class SteamLobbyService : MonoBehaviour
     }
     void OnJoinRequested(GameLobbyJoinRequested_t p)
     {
+        if (InLobby) LeaveLobby();   // добавь эту строку
         JoinLobby(p.m_steamIDLobby);
     }
 
