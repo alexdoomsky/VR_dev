@@ -3,9 +3,8 @@
     "com.rlabrecque.steamworks.net": {
       "version": "file:/home/doom/Downloads/steamworks/com.rlabrecque.steamworks.net",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "ea51b029a5dbcb47a99d3c1fac930b811672ed32"
+      "source": "local",
+      "dependencies": {}
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -258,6 +257,17 @@
         "com.unity.render-pipelines.core": "17.3.0",
         "com.unity.searcher": "4.9.3"
       }
+    },
+    "com.unity.splines": {
+      "version": "2.8.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.settings-manager": "1.0.3"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.sysroot.base": {
       "version": "1.0.2",

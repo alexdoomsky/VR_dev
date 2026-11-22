@@ -1075,12 +1075,12 @@ namespace Smooth
             {
                 if (hasRigidbody)
                 {
-                    rb.velocity = stateBuffer[0].velocity;
+                    rb.linearVelocity = stateBuffer[0].velocity;
                     rb.angularVelocity = stateBuffer[0].angularVelocity * Mathf.Deg2Rad;
                 }
                 else if (hasRigidbody2D)
                 {
-                    rb2D.velocity = stateBuffer[0].velocity;
+                    rb2D.linearVelocity = stateBuffer[0].velocity;
                     rb2D.angularVelocity = stateBuffer[0].angularVelocity.z * Mathf.Deg2Rad;
                 }
                 // Clear the buffer so that you'll have only correct states if ownership changes again.
@@ -1260,8 +1260,8 @@ namespace Smooth
                         // Set Velocity or Position of the object.
                         if (setVelocityInsteadOfPositionOnNonOwners && !teleportPosition)
                         {
-                            if (hasRigidbody) rb.velocity = targetTempState.velocity;
-                            if (hasRigidbody2D) rb2D.velocity = targetTempState.velocity;
+                            if (hasRigidbody) rb.linearVelocity = targetTempState.velocity;
+                            if (hasRigidbody2D) rb2D.linearVelocity = targetTempState.velocity;
                         }
                         else
                         {
@@ -1315,12 +1315,12 @@ namespace Smooth
             {
                 if (hasRigidbody)
                 {
-                    rb.velocity = Vector3.zero;
+                    rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                 }
                 if (hasRigidbody2D)
                 {
-                    rb2D.velocity = Vector2.zero;
+                    rb2D.linearVelocity = Vector2.zero;
                     rb2D.angularVelocity = 0;
                 }
             }
@@ -1514,11 +1514,11 @@ namespace Smooth
                 // Drag.
                 if (hasRigidbody)
                 {
-                    targetTempState.velocity -= targetTempState.velocity * timeDif * rb.drag;
+                    targetTempState.velocity -= targetTempState.velocity * timeDif * rb.linearDamping;
                 }
                 else if (hasRigidbody2D)
                 {
-                    targetTempState.velocity -= targetTempState.velocity * timeDif * rb2D.drag;
+                    targetTempState.velocity -= targetTempState.velocity * timeDif * rb2D.linearDamping;
                 }
             }
 
@@ -1532,8 +1532,8 @@ namespace Smooth
 
                 // Angular drag.
                 float angularDrag = 0;
-                if (hasRigidbody) angularDrag = rb.angularDrag;
-                if (hasRigidbody2D) angularDrag = rb2D.angularDrag;
+                if (hasRigidbody) angularDrag = rb.angularDamping;
+                if (hasRigidbody2D) angularDrag = rb2D.angularDamping;
                 if (hasRigidbody || hasRigidbody2D)
                 {
                     if (angularDrag > 0)
@@ -2086,8 +2086,8 @@ namespace Smooth
             {
                 if (syncVelocity != SyncMode.NONE &&
                     (forceStateSend ||
-                    (rb.velocity != lastVelocityWhenStateWasSent &&
-                    (sendVelocityThreshold == 0 || Vector3.Distance(lastVelocityWhenStateWasSent, rb.velocity) > sendVelocityThreshold))))
+                    (rb.linearVelocity != lastVelocityWhenStateWasSent &&
+                    (sendVelocityThreshold == 0 || Vector3.Distance(lastVelocityWhenStateWasSent, rb.linearVelocity) > sendVelocityThreshold))))
                 {
                     return true;
                 }
@@ -2100,8 +2100,8 @@ namespace Smooth
             {
                 if (syncVelocity != SyncMode.NONE &&
                     (forceStateSend ||
-                    ((rb2D.velocity.x != lastVelocityWhenStateWasSent.x || rb2D.velocity.y != lastVelocityWhenStateWasSent.y) &&
-                    (sendVelocityThreshold == 0 || Vector2.Distance(lastVelocityWhenStateWasSent, rb2D.velocity) > sendVelocityThreshold))))
+                    ((rb2D.linearVelocity.x != lastVelocityWhenStateWasSent.x || rb2D.linearVelocity.y != lastVelocityWhenStateWasSent.y) &&
+                    (sendVelocityThreshold == 0 || Vector2.Distance(lastVelocityWhenStateWasSent, rb2D.linearVelocity) > sendVelocityThreshold))))
                 {
                     return true;
                 }

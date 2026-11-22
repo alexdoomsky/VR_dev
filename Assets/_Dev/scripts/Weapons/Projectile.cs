@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,11 +8,11 @@ public class Projectile : MonoBehaviour
     [SerializeField] float explosionRadius = 3f, explosionForce = 2000f;
 
     [Header("Эффекты попадания")]
-    [SerializeField] GameObject hotMetalEffect;   // 1: раскалённый металл, искры, вспышка
-    [SerializeField] GameObject smokeEffect;      // 2: дым
-    [SerializeField] float hotMetalLifetime = 3f; // через сколько удалить объект эффекта
+    [SerializeField] GameObject hotMetalEffect;
+    [SerializeField] GameObject smokeEffect;
+    [SerializeField] float hotMetalLifetime = 3f;
     [SerializeField] float smokeLifetime = 8f;
-    [SerializeField] float effectOffset = 0.05f;  // сдвиг от поверхности, чтобы не мерцало
+    [SerializeField] float effectOffset = 0.05f;
 
     [Header("Жизнь снаряда")]
     [SerializeField] bool destroyOnHit = false;
@@ -42,44 +43,55 @@ public class Projectile : MonoBehaviour
         ownCols = ignore;
         SetIgnore(true);
 
-        if (lifetime > 0f) Destroy(gameObject, lifetime);
+        if (lifetime > 0f)
+            Destroy(gameObject, lifetime);
 
         alive.Enqueue(this);
+
         while (alive.Count > maxAlive)
         {
             var old = alive.Dequeue();
-            if (old) Destroy(old.gameObject);
+            if (old)
+                Destroy(old.gameObject);
         }
     }
 
     void SetIgnore(bool value)
     {
         if (ownCols == null) return;
+
         foreach (var a in myCols)
+        {
             foreach (var b in ownCols)
-                if (a && b) Physics.IgnoreCollision(a, b, value);
+            {
+                if (a && b)
+                    Physics.IgnoreCollision(a, b, value);
+            }
+        }
     }
 
     void SetVelocity(Vector3 v)
     {
-#if UNITY_6000_0_OR_NEWER
+        #if UNITY_6000_0_OR_NEWER
         rb.linearVelocity = v;
-#else
+        #else
         rb.velocity = v;
-#endif
+        #endif
     }
 
     Vector3 Velocity =>
-#if UNITY_6000_0_OR_NEWER
-        rb.linearVelocity;
-#else
-        rb.velocity;
-#endif
+    #if UNITY_6000_0_OR_NEWER
+    rb.linearVelocity;
+    #else
+    rb.velocity;
+    #endif
 
     void Update()
     {
         if (ignoreRestored) return;
+
         age += Time.deltaTime;
+
         if (age >= ignoreOwnTime)
         {
             SetIgnore(false);
@@ -90,43 +102,94 @@ public class Projectile : MonoBehaviour
     void FixedUpdate()
     {
         if (hit) return;
+
         var v = Velocity;
-        if (v.sqrMagnitude > 1f) rb.MoveRotation(Quaternion.LookRotation(v));
+
+        if (v.sqrMagnitude > 1f)
+            rb.MoveRotation(Quaternion.LookRotation(v));
     }
 
     void OnCollisionEnter(Collision c)
     {
         if (hit) return;
+
         hit = true;
 
-        // Точка и нормаль попадания: эффекты вылетают от поверхности
         ContactPoint cp = c.GetContact(0);
+
         Vector3 point = cp.point + cp.normal * effectOffset;
         Quaternion rot = Quaternion.LookRotation(cp.normal);
 
+        // Эффекты попадания
         PlayHit(point, rot);
-        var net = GetComponent<ProjectileNet>();
-        if (net) net.RpcHit(point, rot);
 
-        int n = Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, hits);
+        var net = GetComponent<ProjectileNet>();
+        if (net)
+            net.RpcHit(point, rot);
+
+        // Прямое попадание по NPC
+        SplineTankMovement directNpc =
+        c.collider.GetComponentInParent<SplineTankMovement>();
+
+        if (directNpc != null)
+        {
+            directNpc.DestroyTank();
+
+            Debug.Log(
+                $"[Projectile] Direct hit on NPC: {directNpc.name}",
+                directNpc
+            );
+        }
+
+        // Обработка взрыва и сплеш-урона остальных объектов
+        int n = Physics.OverlapSphereNonAlloc(
+            transform.position,
+            explosionRadius,
+            hits
+        );
+
         for (int i = 0; i < n; i++)
         {
             var col = hits[i];
+
+            if (!col)
+                continue;
+
+            // NPC не получают сплеш-урон и взрывную силу
+            if (col.GetComponentInParent<SplineTankMovement>() != null)
+                continue;
+
             if (col.attachedRigidbody && col.attachedRigidbody != rb)
-                col.attachedRigidbody.AddExplosionForce(explosionForce, transform.position, explosionRadius);
+            {
+                col.attachedRigidbody.AddExplosionForce(
+                    explosionForce,
+                    transform.position,
+                    explosionRadius
+                );
+            }
+
             col.GetComponentInParent<IDamageable>()?.TakeDamage(damage);
         }
 
-        if (destroyOnHit) Destroy(gameObject);
+        if (destroyOnHit)
+            Destroy(gameObject);
     }
+
     public void PlayHit(Vector3 point, Quaternion rot)
     {
         SpawnEffect(hotMetalEffect, point, rot, hotMetalLifetime);
         SpawnEffect(smokeEffect, point, rot, smokeLifetime);
     }
-    static void SpawnEffect(GameObject prefab, Vector3 pos, Quaternion rot, float life)
+
+    static void SpawnEffect(
+        GameObject prefab,
+        Vector3 pos,
+        Quaternion rot,
+        float life
+    )
     {
         if (!prefab) return;
+
         var fx = Instantiate(prefab, pos, rot);
         Destroy(fx, life);
     }
