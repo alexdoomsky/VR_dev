@@ -19,6 +19,8 @@ EditorBuildSettings:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 9bec1ce6a03ccba4b9a8215241b32e63, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: a49cadc1a815591479693b955ccf08c1, type: 2}
+    com.unity.addressableassets: {fileID: 11400000, guid: bc38e58c9a394e0f9a0812675f05f841, type: 2}
+    com.unity.localization.settings: {fileID: 11400000, guid: 4101d1efe43827c5bb1c5626fbead4f3, type: 2}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 908d62378b8205449861e5838a18a596, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 4b3de149e50ea0c4f8ad04c79b9f12ec, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: b716680a41c7a094fa3b7fb9a8024a67, type: 2}
